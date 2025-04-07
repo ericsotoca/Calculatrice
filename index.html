@@ -192,6 +192,7 @@
             justify-content: center;
             align-items: center;
             margin-right: 15px;
+            font-size: 1.5em;
         }
         
         .app-info {
@@ -263,7 +264,7 @@
             color: #ccc;
         }
         
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             padding: 12px;
             border: 1px solid #444;
@@ -392,38 +393,51 @@
             </div>
         </div>
         
-        <!-- Interface des applications cachées -->
+        <!-- Interface des accès cachés -->
         <div class="hidden-apps" id="hiddenApps">
             <div class="header">
-                <h1>Applications cachées</h1>
+                <h1>Accès cachés</h1>
                 <button class="close-btn" id="closeApps">×</button>
             </div>
             <div class="app-list" id="appList">
                 <div class="add-app" id="addAppBtn">
                     <div>
-                        <div class="app-title">Ajouter une application</div>
-                        <div class="app-desc">Masquer une nouvelle application</div>
+                        <div class="app-title">Ajouter un accès</div>
+                        <div class="app-desc">Créer un nouvel accès sécurisé</div>
                     </div>
                     <div class="add-icon">+</div>
                 </div>
-                <!-- Les applications seront ajoutées ici dynamiquement -->
+                <!-- Les accès seront ajoutés ici dynamiquement -->
             </div>
         </div>
         
-        <!-- Formulaire d'ajout/édition d'application -->
+        <!-- Formulaire d'ajout/édition d'accès -->
         <div class="app-form" id="appForm">
             <div class="header">
-                <h1 id="formTitle">Ajouter une application</h1>
+                <h1 id="formTitle">Ajouter un accès</h1>
                 <button class="close-btn" id="closeForm">×</button>
             </div>
             <div class="form-content">
                 <div class="form-group">
-                    <label class="form-label" for="appTitle">Nom de l'application</label>
-                    <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Messages">
+                    <label class="form-label" for="appTitle">Nom de l'accès</label>
+                    <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Banque">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="appLink">Lien ou description</label>
-                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : Lien ou info">
+                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : https://ma-banque.fr">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="appIcon">Icône</label>
+                    <select class="form-select" id="appIcon">
+                        <option value="💰">💰 (Banque)</option>
+                        <option value="🔒">🔒 (Sécurisé)</option>
+                        <option value="🌐">🌐 (Web)</option>
+                        <option value="📱">📱 (Mobile)</option>
+                        <option value="💬">💬 (Messages)</option>
+                        <option value="📧">📧 (Email)</option>
+                        <option value="🗂️">🗂️ (Documents)</option>
+                        <option value="🔑">🔑 (Clé)</option>
+                    </select>
                 </div>
                 <button class="form-btn" id="saveApp">Enregistrer</button>
             </div>
@@ -439,9 +453,8 @@
             let currentOperation = '';
             let previousInput = '';
             let calculationSequence = '';
-            let editingIndex = null; // Pour suivre l’index de l’app en cours d’édition
+            let editingIndex = null;
             
-            // Éléments DOM
             const calculator = document.getElementById('calculator');
             const hiddenApps = document.getElementById('hiddenApps');
             const appForm = document.getElementById('appForm');
@@ -471,10 +484,11 @@
             });
             
             document.getElementById('addAppBtn').addEventListener('click', function() {
-                editingIndex = null; // Nouvelle application
-                formTitle.textContent = "Ajouter une application";
+                editingIndex = null;
+                formTitle.textContent = "Ajouter un accès";
                 document.getElementById('appTitle').value = '';
                 document.getElementById('appLink').value = '';
+                document.getElementById('appIcon').value = '💰';
                 appForm.classList.add('visible');
             });
             
@@ -485,12 +499,13 @@
             document.getElementById('saveApp').addEventListener('click', function() {
                 const title = document.getElementById('appTitle').value.trim();
                 const link = document.getElementById('appLink').value.trim();
+                const icon = document.getElementById('appIcon').value;
                 
                 if (title && link) {
                     if (editingIndex === null) {
-                        saveApp(title, link); // Ajouter une nouvelle app
+                        saveApp(title, link, icon);
                     } else {
-                        updateApp(editingIndex, title, link); // Modifier une app existante
+                        updateApp(editingIndex, title, link, icon);
                     }
                     appForm.classList.remove('visible');
                 } else {
@@ -607,7 +622,7 @@
                     const appItem = document.createElement('div');
                     appItem.className = 'app-item';
                     appItem.innerHTML = `
-                        <div class="app-icon">📱</div>
+                        <div class="app-icon">${app.icon}</div>
                         <div class="app-info">
                             <div class="app-title">${app.title}</div>
                             <div class="app-desc">${app.link}</div>
@@ -622,7 +637,7 @@
                         if (app.link.startsWith('http')) {
                             window.open(app.link, '_blank');
                         } else {
-                            alert(`Ouvrir l'application : ${app.title}\nDétails : ${app.link}`);
+                            alert(`Ouvrir l'accès : ${app.title}\nDétails : ${app.link}`);
                         }
                     });
                     
@@ -638,16 +653,16 @@
                 });
             }
             
-            function saveApp(title, link) {
+            function saveApp(title, link, icon) {
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps.push({ title, link });
+                apps.push({ title, link, icon });
                 localStorage.setItem('hiddenApps', JSON.stringify(apps));
                 loadApps();
             }
             
-            function updateApp(index, title, link) {
+            function updateApp(index, title, link, icon) {
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps[index] = { title, link };
+                apps[index] = { title, link, icon };
                 localStorage.setItem('hiddenApps', JSON.stringify(apps));
                 loadApps();
             }
@@ -656,14 +671,15 @@
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
                 const app = apps[index];
                 editingIndex = index;
-                formTitle.textContent = "Modifier l'application";
+                formTitle.textContent = "Modifier l'accès";
                 document.getElementById('appTitle').value = app.title;
                 document.getElementById('appLink').value = app.link;
+                document.getElementById('appIcon').value = app.icon;
                 appForm.classList.add('visible');
             }
             
             function deleteApp(index) {
-                if (confirm("Voulez-vous vraiment supprimer cette application ?")) {
+                if (confirm("Voulez-vous vraiment supprimer cet accès ?")) {
                     const apps = JSON.parse(localStorage.getItem('hiddenApps'));
                     apps.splice(index, 1);
                     localStorage.setItem('hiddenApps', JSON.stringify(apps));
