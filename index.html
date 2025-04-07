@@ -466,7 +466,19 @@
             const formTitle = document.getElementById('formTitle');
             
             if (!localStorage.getItem('hiddenApps')) {
-                localStorage.setItem('hiddenApps', JSON.stringify([]));
+                localStorage.setItem('hiddenApps', JSON.stringify([
+                    { title: "EasyBourse", link: "https://www.easybourse.com", icon: "💰" },
+                    { title: "La Banque Postale", link: "https://www.labanquepostale.fr", icon: "💰" },
+                    { title: "PayPal", link: "https://www.paypal.com", icon: "💰" },
+                    { title: "Trade Republic", link: "https://app.traderepublic.com", icon: "💰" },
+                    { title: "Facebook", link: "https://www.facebook.com", icon: "🌐" },
+                    { title: "Gmail", link: "https://mail.google.com", icon: "📧" },
+                    { title: "Google Calendar", link: "https://calendar.google.com", icon: "📅" },
+                    { title: "Google Drive", link: "https://drive.google.com", icon: "🗂️" },
+                    { title: "Play Store", link: "https://ericsotoca.github.io/playstore/", icon: "💬" },
+                    { title: "WhatsApp", link: "https://web.whatsapp.com", icon: "💬" },
+                    { title: "Zoom", link: "https://zoom.us/signin", icon: "🎥" }
+                ]));
             }
             
             loadApps();
