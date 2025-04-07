@@ -18,23 +18,22 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 15px; /* Marge extérieure pour réalisme */
+            padding: 15px;
         }
         
         .app-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            width: 100%; /* Prend toute la largeur */
-            max-width: 600px; /* Limite pour un look calculatrice réaliste */
+            width: 100%;
+            max-width: 600px;
             margin: 0 auto;
-            background-color: #1a1a1a; /* Fond sombre pour la calculatrice */
-            border-radius: 15px; /* Coins arrondis */
+            background-color: #1a1a1a;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Ombre légère */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
         
-        /* Interface de la calculatrice (façade) */
         .calculator {
             flex: 1;
             display: flex;
@@ -108,7 +107,6 @@
             background-color: #4c94f5;
         }
         
-        /* Interface des applications cachées */
         .hidden-apps {
             position: absolute;
             top: 0;
@@ -182,7 +180,7 @@
             margin-bottom: 10px;
             background-color: #333;
             border-radius: 8px;
-            cursor: pointer;
+            position: relative;
         }
         
         .app-icon {
@@ -210,7 +208,27 @@
             color: #aaa;
         }
         
-        /* Formulaire d'ajout d'application */
+        .app-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        
+        .action-btn.edit {
+            color: #217af4;
+        }
+        
+        .action-btn.delete {
+            color: #ff4444;
+        }
+        
         .app-form {
             position: absolute;
             top: 0;
@@ -270,7 +288,6 @@
             background-color: #4c94f5;
         }
         
-        /* Écran de mot de passe */
         .password-screen {
             position: absolute;
             top: 0;
@@ -393,10 +410,10 @@
             </div>
         </div>
         
-        <!-- Formulaire d'ajout d'application -->
+        <!-- Formulaire d'ajout/édition d'application -->
         <div class="app-form" id="appForm">
             <div class="header">
-                <h1>Ajouter une application</h1>
+                <h1 id="formTitle">Ajouter une application</h1>
                 <button class="close-btn" id="closeForm">×</button>
             </div>
             <div class="form-content">
@@ -415,15 +432,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mot de passe pour accéder aux applications cachées
-            const SECRET_CODE = "123456"; // Changez ce code pour votre sécurité
-            const SECRET_CALCULATION = "1+2+3="; // Séquence calculatrice pour accéder aux apps
+            const SECRET_CODE = "123456";
+            const SECRET_CALCULATION = "1+2+3=";
             
-            // Variables pour stocker l'état de la calculatrice
             let currentInput = '0';
             let currentOperation = '';
             let previousInput = '';
             let calculationSequence = '';
+            let editingIndex = null; // Pour suivre l’index de l’app en cours d’édition
             
             // Éléments DOM
             const calculator = document.getElementById('calculator');
@@ -431,20 +447,17 @@
             const appForm = document.getElementById('appForm');
             const passwordScreen = document.getElementById('passwordScreen');
             const passwordInput = document.getElementById('passwordInput');
-            
             const resultDisplay = document.getElementById('result');
             const operationDisplay = document.getElementById('operation');
             const appList = document.getElementById('appList');
+            const formTitle = document.getElementById('formTitle');
             
-            // Vérifier et initialiser le stockage local
             if (!localStorage.getItem('hiddenApps')) {
                 localStorage.setItem('hiddenApps', JSON.stringify([]));
             }
             
-            // Charger les applications cachées
             loadApps();
             
-            // Gestionnaire pour les boutons de calculatrice
             document.querySelectorAll('.btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const value = this.getAttribute('data-value');
@@ -452,38 +465,39 @@
                 });
             });
             
-            // Gestionnaire pour le bouton de fermeture des applications
             document.getElementById('closeApps').addEventListener('click', function() {
                 hiddenApps.classList.remove('visible');
                 calculator.classList.remove('hidden');
             });
             
-            // Gestionnaire pour le bouton d'ajout d'application
             document.getElementById('addAppBtn').addEventListener('click', function() {
-                appForm.classList.add('visible');
+                editingIndex = null; // Nouvelle application
+                formTitle.textContent = "Ajouter une application";
                 document.getElementById('appTitle').value = '';
                 document.getElementById('appLink').value = '';
+                appForm.classList.add('visible');
             });
             
-            // Gestionnaire pour le bouton de fermeture du formulaire
             document.getElementById('closeForm').addEventListener('click', function() {
                 appForm.classList.remove('visible');
             });
             
-            // Gestionnaire pour le bouton de sauvegarde d'application
             document.getElementById('saveApp').addEventListener('click', function() {
                 const title = document.getElementById('appTitle').value.trim();
                 const link = document.getElementById('appLink').value.trim();
                 
                 if (title && link) {
-                    saveApp(title, link);
+                    if (editingIndex === null) {
+                        saveApp(title, link); // Ajouter une nouvelle app
+                    } else {
+                        updateApp(editingIndex, title, link); // Modifier une app existante
+                    }
                     appForm.classList.remove('visible');
                 } else {
                     alert("Veuillez remplir tous les champs.");
                 }
             });
             
-            // Gestionnaire pour le bouton de validation du mot de passe
             document.getElementById('submitPassword').addEventListener('click', checkPassword);
             passwordInput.addEventListener('keyup', function(event) {
                 if (event.key === "Enter") {
@@ -491,7 +505,6 @@
                 }
             });
             
-            // Fonction pour gérer les entrées de la calculatrice
             function handleInput(value) {
                 if (value === "=") {
                     calculationSequence += "=";
@@ -552,7 +565,6 @@
                 resultDisplay.textContent = currentInput;
             }
             
-            // Fonction pour effectuer les calculs
             function calculate() {
                 const prev = parseFloat(previousInput);
                 const current = parseFloat(currentInput);
@@ -575,7 +587,6 @@
                 currentInput = result.toString();
             }
             
-            // Fonction pour obtenir le symbole d'opération
             function getOperatorSymbol(operator) {
                 switch (operator) {
                     case '+': return '+';
@@ -586,7 +597,6 @@
                 }
             }
             
-            // Fonction pour charger les applications cachées
             function loadApps() {
                 const childrenToRemove = Array.from(appList.children).filter(child => child !== document.getElementById('addAppBtn'));
                 childrenToRemove.forEach(child => appList.removeChild(child));
@@ -602,9 +612,13 @@
                             <div class="app-title">${app.title}</div>
                             <div class="app-desc">${app.link}</div>
                         </div>
+                        <div class="app-actions">
+                            <button class="action-btn edit" data-index="${index}">✏️</button>
+                            <button class="action-btn delete" data-index="${index}">🗑️</button>
+                        </div>
                     `;
                     
-                    appItem.addEventListener('click', function() {
+                    appItem.querySelector('.app-info').addEventListener('click', function() {
                         if (app.link.startsWith('http')) {
                             window.open(app.link, '_blank');
                         } else {
@@ -612,11 +626,18 @@
                         }
                     });
                     
+                    appItem.querySelector('.edit').addEventListener('click', function() {
+                        editApp(index);
+                    });
+                    
+                    appItem.querySelector('.delete').addEventListener('click', function() {
+                        deleteApp(index);
+                    });
+                    
                     appList.appendChild(appItem);
                 });
             }
             
-            // Fonction pour sauvegarder une application
             function saveApp(title, link) {
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
                 apps.push({ title, link });
@@ -624,7 +645,32 @@
                 loadApps();
             }
             
-            // Fonction pour vérifier le mot de passe
+            function updateApp(index, title, link) {
+                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
+                apps[index] = { title, link };
+                localStorage.setItem('hiddenApps', JSON.stringify(apps));
+                loadApps();
+            }
+            
+            function editApp(index) {
+                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
+                const app = apps[index];
+                editingIndex = index;
+                formTitle.textContent = "Modifier l'application";
+                document.getElementById('appTitle').value = app.title;
+                document.getElementById('appLink').value = app.link;
+                appForm.classList.add('visible');
+            }
+            
+            function deleteApp(index) {
+                if (confirm("Voulez-vous vraiment supprimer cette application ?")) {
+                    const apps = JSON.parse(localStorage.getItem('hiddenApps'));
+                    apps.splice(index, 1);
+                    localStorage.setItem('hiddenApps', JSON.stringify(apps));
+                    loadApps();
+                }
+            }
+            
             function checkPassword() {
                 const enteredPassword = passwordInput.value;
                 
