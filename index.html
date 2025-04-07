@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculatrice</title>
+    <title>Calculatrice Secrète</title>
     <style>
         * {
             box-sizing: border-box;
@@ -18,15 +18,20 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            padding: 15px; /* Marge extérieure pour réalisme */
         }
         
         .app-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 100%;
+            width: 100%; /* Prend toute la largeur */
+            max-width: 600px; /* Limite pour un look calculatrice réaliste */
             margin: 0 auto;
+            background-color: #1a1a1a; /* Fond sombre pour la calculatrice */
+            border-radius: 15px; /* Coins arrondis */
             overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Ombre légère */
         }
         
         /* Interface de la calculatrice (façade) */
@@ -48,13 +53,13 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: flex-end;
-            padding: 10px;
-            font-size: 3em;
+            padding: 15px;
+            font-size: 2.5em;
             border-bottom: 1px solid #333;
         }
         
         .operation {
-            font-size: 0.5em;
+            font-size: 0.6em;
             color: #aaa;
             height: 1em;
             min-height: 1em;
@@ -64,7 +69,8 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
+            gap: 2px;
+            padding: 10px;
         }
         
         .btn {
@@ -78,7 +84,8 @@
             cursor: pointer;
             outline: none;
             transition: background-color 0.2s;
-            min-height: 70px;
+            min-height: 60px;
+            border-radius: 8px;
         }
         
         .btn:active {
@@ -142,7 +149,7 @@
         
         .app-list {
             flex: 1;
-            overflow-y: auto;.
+            overflow-y: auto;
             padding: 20px;
         }
         
@@ -154,6 +161,7 @@
             margin-bottom: 10px;
             border-radius: 8px;
             align-items: center;
+            cursor: pointer;
         }
         
         .add-icon {
@@ -174,6 +182,7 @@
             margin-bottom: 10px;
             background-color: #333;
             border-radius: 8px;
+            cursor: pointer;
         }
         
         .app-icon {
@@ -236,7 +245,7 @@
             color: #ccc;
         }
         
-        .form-input, .form-textarea {
+        .form-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #444;
@@ -244,11 +253,6 @@
             color: white;
             border-radius: 4px;
             font-size: 16px;
-        }
-        
-        .form-textarea {
-            height: 100px;
-            resize: none;
         }
         
         .form-btn {
@@ -266,31 +270,7 @@
             background-color: #4c94f5;
         }
         
-        /* Notes cachées */
-        .note-view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #232323;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .note-view.visible {
-            transform: translateX(0);
-        }
-        
-        .note-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-        
+        /* Écran de mot de passe */
         .password-screen {
             position: absolute;
             top: 0;
@@ -404,8 +384,8 @@
             <div class="app-list" id="appList">
                 <div class="add-app" id="addAppBtn">
                     <div>
-                        <div class="app-title">Ajouter une note</div>
-                        <div class="app-desc">Créer une nouvelle note secrète</div>
+                        <div class="app-title">Ajouter une application</div>
+                        <div class="app-desc">Masquer une nouvelle application</div>
                     </div>
                     <div class="add-icon">+</div>
                 </div>
@@ -416,29 +396,20 @@
         <!-- Formulaire d'ajout d'application -->
         <div class="app-form" id="appForm">
             <div class="header">
-                <h1>Nouvelle note</h1>
+                <h1>Ajouter une application</h1>
                 <button class="close-btn" id="closeForm">×</button>
             </div>
             <div class="form-content">
                 <div class="form-group">
-                    <label class="form-label" for="appTitle">Titre</label>
-                    <input type="text" class="form-input" id="appTitle" placeholder="Titre de la note">
+                    <label class="form-label" for="appTitle">Nom de l'application</label>
+                    <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Messages">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="appContent">Contenu</label>
-                    <textarea class="form-textarea" id="appContent" placeholder="Contenu de votre note secrète"></textarea>
+                    <label class="form-label" for="appLink">Lien ou description</label>
+                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : Lien ou info">
                 </div>
                 <button class="form-btn" id="saveApp">Enregistrer</button>
             </div>
-        </div>
-        
-        <!-- Vue d'une note -->
-        <div class="note-view" id="noteView">
-            <div class="header">
-                <h1 id="noteTitle">Titre de la note</h1>
-                <button class="close-btn" id="closeNote">×</button>
-            </div>
-            <div class="note-content" id="noteContent"></div>
         </div>
     </div>
 
@@ -458,16 +429,12 @@
             const calculator = document.getElementById('calculator');
             const hiddenApps = document.getElementById('hiddenApps');
             const appForm = document.getElementById('appForm');
-            const noteView = document.getElementById('noteView');
             const passwordScreen = document.getElementById('passwordScreen');
             const passwordInput = document.getElementById('passwordInput');
             
             const resultDisplay = document.getElementById('result');
             const operationDisplay = document.getElementById('operation');
-            
             const appList = document.getElementById('appList');
-            const noteTitle = document.getElementById('noteTitle');
-            const noteContent = document.getElementById('noteContent');
             
             // Vérifier et initialiser le stockage local
             if (!localStorage.getItem('hiddenApps')) {
@@ -477,7 +444,7 @@
             // Charger les applications cachées
             loadApps();
             
-            // Gestionnaire d'événements pour les boutons de calculatrice
+            // Gestionnaire pour les boutons de calculatrice
             document.querySelectorAll('.btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const value = this.getAttribute('data-value');
@@ -495,7 +462,7 @@
             document.getElementById('addAppBtn').addEventListener('click', function() {
                 appForm.classList.add('visible');
                 document.getElementById('appTitle').value = '';
-                document.getElementById('appContent').value = '';
+                document.getElementById('appLink').value = '';
             });
             
             // Gestionnaire pour le bouton de fermeture du formulaire
@@ -503,18 +470,13 @@
                 appForm.classList.remove('visible');
             });
             
-            // Gestionnaire pour le bouton de fermeture de la note
-            document.getElementById('closeNote').addEventListener('click', function() {
-                noteView.classList.remove('visible');
-            });
-            
             // Gestionnaire pour le bouton de sauvegarde d'application
             document.getElementById('saveApp').addEventListener('click', function() {
                 const title = document.getElementById('appTitle').value.trim();
-                const content = document.getElementById('appContent').value.trim();
+                const link = document.getElementById('appLink').value.trim();
                 
-                if (title && content) {
-                    saveApp(title, content);
+                if (title && link) {
+                    saveApp(title, link);
                     appForm.classList.remove('visible');
                 } else {
                     alert("Veuillez remplir tous les champs.");
@@ -531,7 +493,6 @@
             
             // Fonction pour gérer les entrées de la calculatrice
             function handleInput(value) {
-                // Vérifier la séquence secrète
                 if (value === "=") {
                     calculationSequence += "=";
                     if (calculationSequence.includes(SECRET_CALCULATION)) {
@@ -542,13 +503,11 @@
                     }
                 } else if ("0123456789+-*/".includes(value)) {
                     calculationSequence += value;
-                    // Garder seulement les 10 derniers caractères
                     if (calculationSequence.length > 10) {
                         calculationSequence = calculationSequence.slice(-10);
                     }
                 }
                 
-                // Logique de la calculatrice normale
                 if (value === 'C') {
                     currentInput = '0';
                     currentOperation = '';
@@ -583,7 +542,6 @@
                         currentInput += '.';
                     }
                 } else {
-                    // Chiffres
                     if (currentInput === '0') {
                         currentInput = value;
                     } else {
@@ -601,15 +559,9 @@
                 let result = 0;
                 
                 switch (currentOperation) {
-                    case '+':
-                        result = prev + current;
-                        break;
-                    case '-':
-                        result = prev - current;
-                        break;
-                    case '*':
-                        result = prev * current;
-                        break;
+                    case '+': result = prev + current; break;
+                    case '-': result = prev - current; break;
+                    case '*': result = prev * current; break;
                     case '/':
                         if (current !== 0) {
                             result = prev / current;
@@ -636,26 +588,28 @@
             
             // Fonction pour charger les applications cachées
             function loadApps() {
-                // Effacer la liste existante (sauf le bouton d'ajout)
                 const childrenToRemove = Array.from(appList.children).filter(child => child !== document.getElementById('addAppBtn'));
                 childrenToRemove.forEach(child => appList.removeChild(child));
                 
-                // Charger les apps depuis le localStorage
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
                 
                 apps.forEach((app, index) => {
                     const appItem = document.createElement('div');
                     appItem.className = 'app-item';
                     appItem.innerHTML = `
-                        <div class="app-icon">📝</div>
+                        <div class="app-icon">📱</div>
                         <div class="app-info">
                             <div class="app-title">${app.title}</div>
-                            <div class="app-desc">Note secrète</div>
+                            <div class="app-desc">${app.link}</div>
                         </div>
                     `;
                     
                     appItem.addEventListener('click', function() {
-                        openNote(app, index);
+                        if (app.link.startsWith('http')) {
+                            window.open(app.link, '_blank');
+                        } else {
+                            alert(`Ouvrir l'application : ${app.title}\nDétails : ${app.link}`);
+                        }
                     });
                     
                     appList.appendChild(appItem);
@@ -663,45 +617,10 @@
             }
             
             // Fonction pour sauvegarder une application
-            function saveApp(title, content) {
+            function saveApp(title, link) {
                 const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps.push({ title, content });
+                apps.push({ title, link });
                 localStorage.setItem('hiddenApps', JSON.stringify(apps));
-                loadApps();
-            }
-            
-            // Fonction pour ouvrir une note
-            function openNote(app, index) {
-                noteTitle.textContent = app.title;
-                noteContent.textContent = app.content;
-                noteView.classList.add('visible');
-                
-                // Ajout d'un bouton de suppression
-                if (document.getElementById('deleteNoteBtn')) {
-                    noteView.querySelector('.header').removeChild(document.getElementById('deleteNoteBtn'));
-                }
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.id = 'deleteNoteBtn';
-                deleteBtn.className = 'close-btn';
-                deleteBtn.textContent = '🗑️';
-                deleteBtn.style.marginRight = '10px';
-                
-                deleteBtn.addEventListener('click', function() {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
-                        deleteNote(index);
-                    }
-                });
-                
-                noteView.querySelector('.header').insertBefore(deleteBtn, document.getElementById('closeNote'));
-            }
-            
-            // Fonction pour supprimer une note
-            function deleteNote(index) {
-                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps.splice(index, 1);
-                localStorage.setItem('hiddenApps', JSON.stringify(apps));
-                noteView.classList.remove('visible');
                 loadApps();
             }
             
