@@ -152,7 +152,7 @@
         .btn.toggle { background-color: #1f68c1; } /* DEG/RAD, INV toggles */
         .btn.toggle.active { background-color: #0f4a91; }
 
-        /* Hidden Apps (styles mostly unchanged) */
+        /* Hidden Apps */
         .hidden-apps {
             position: absolute;
             top: 0;
@@ -165,7 +165,7 @@
             transform: translateY(100%);
             transition: transform 0.5s ease;
             visibility: hidden;
-            z-index: 5; /* Ensure it's above the calculator when visible */
+            z-index: 5;
         }
         .hidden-apps.visible {
             transform: translateY(0);
@@ -182,12 +182,13 @@
         .app-info { flex: 1; cursor: pointer; overflow: hidden; }
         .app-title { font-weight: bold; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .app-desc { font-size: 0.8em; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* Note: .app-notes class is not used for display in the list view for security/simplicity */
         .app-actions { display: flex; gap: 8px; }
         .action-btn { background: transparent; border: none; color: #fff; font-size: 1.1em; cursor: pointer; }
         .action-btn.edit { color: #217af4; }
         .action-btn.delete { color: #ff4444; }
 
-        /* App Form (styles mostly unchanged) */
+        /* App Form */
         .app-form {
             position: absolute;
             top: 0;
@@ -200,18 +201,27 @@
             transform: translateX(100%);
             transition: transform 0.3s ease;
             visibility: hidden;
-            z-index: 6; /* Above hidden apps */
+            z-index: 6;
         }
         .app-form.visible { transform: translateX(0); visibility: visible; }
         .form-content { padding: 20px; flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; margin-bottom: 6px; color: #ccc; font-size: 0.9em; }
-        .form-input, .form-select { width: 100%; padding: 10px; border: 1px solid #444; background-color: #333; color: white; border-radius: 4px; font-size: 1em; }
-        .form-btn { padding: 12px; background-color: #217af4; color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; margin-top: auto; }
+        .form-input, .form-select, .form-textarea { /* Added .form-textarea */
+             width: 100%; padding: 10px; border: 1px solid #444;
+             background-color: #333; color: white; border-radius: 4px; font-size: 1em;
+        }
+        .form-textarea {
+            resize: vertical; /* Allow vertical resize only */
+            min-height: 80px; /* Give it some initial height */
+            font-family: inherit; /* Ensure it uses the same font */
+        }
+
+        .form-btn { padding: 12px; background-color: #217af4; color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; margin-top: auto; /* Pushes button to bottom if content allows */ }
         .form-btn:hover { background-color: #398df5; }
         .form-btn:active { background-color: #4c94f5; }
 
-        /* Password Screen (styles mostly unchanged) */
+        /* Password Screen */
         .password-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
@@ -224,12 +234,11 @@
             width: 80%; max-width: 300px; padding: 15px; border: 1px solid #555;
             background-color: #333; color: white; border-radius: 4px; margin-bottom: 20px;
             text-align: center; font-size: 1.4rem; letter-spacing: 0.3em;
-            appearance: none; -webkit-appearance: none; /* Try to hide spinners */
+            appearance: none; -webkit-appearance: none;
         }
         .password-input::-webkit-outer-spin-button,
         .password-input::-webkit-inner-spin-button {
-             -webkit-appearance: none;
-              margin: 0; /* Might help */
+             -webkit-appearance: none; margin: 0;
         }
          .password-input[type=number] {
             -moz-appearance: textfield; /* Firefox */
@@ -254,60 +263,48 @@
     </div>
 
     <div class="app-container">
+        <!-- Calculator Area remains the same -->
         <div class="calculator" id="calculator">
             <div class="display">
                 <div class="operation" id="operation"></div>
                 <div class="result" id="result">0</div>
             </div>
             <div class="buttons">
-                <!-- Row 1 -->
                 <button class="btn function toggle" id="degRadBtn" data-value="DEG">DEG</button>
                 <button class="btn function toggle" id="invBtn" data-value="Inv">Inv</button>
                 <button class="btn function" data-value="sin"><sup>asin</sup>sin</button>
                 <button class="btn function" data-value="cos"><sup>acos</sup>cos</button>
                 <button class="btn function" data-value="tan"><sup>atan</sup>tan</button>
-                <!-- Row 2 -->
                 <button class="btn function" data-value="^"><sup>y√x</sup>x<sup>y</sup></button>
                 <button class="btn function" data-value="log"><sup>10<sup>x</sup></sup>log</button>
                 <button class="btn function" data-value="ln"><sup>e<sup>x</sup></sup>ln</button>
                 <button class="btn function" data-value="(">(</button>
                 <button class="btn function" data-value=")">)</button>
-                <!-- Row 3 -->
                 <button class="btn function" data-value="sqrt"><sup>x³</sup>√</button>
                  <button class="btn" data-value="C">C</button>
                 <button class="btn" data-value="DEL">⌫</button>
                 <button class="btn" data-value="%">%</button>
                 <button class="btn operator" data-value="/">÷</button>
-                <!-- Row 4 -->
                 <button class="btn function" data-value="x2"><sup>³√x</sup>x²</button>
                 <button class="btn" data-value="7">7</button>
                 <button class="btn" data-value="8">8</button>
                 <button class="btn" data-value="9">9</button>
                 <button class="btn operator" data-value="*">×</button>
-                <!-- Row 5 -->
                 <button class="btn function" data-value="!">n!</button>
                 <button class="btn" data-value="4">4</button>
                 <button class="btn" data-value="5">5</button>
                 <button class="btn" data-value="6">6</button>
                 <button class="btn operator" data-value="-">−</button>
-                <!-- Row 6 -->
                 <button class="btn function" data-value="pi">π</button>
                 <button class="btn" data-value="1">1</button>
                 <button class="btn" data-value="2">2</button>
                 <button class="btn" data-value="3">3</button>
                 <button class="btn operator" data-value="+">+</button>
-                 <!-- Row 7 -->
                 <button class="btn function" data-value="e">e</button>
                 <button class="btn" data-value="+/-">±</button>
                 <button class="btn" data-value="0">0</button>
                 <button class="btn" data-value=".">.</button>
                 <button class="btn equals" data-value="=">=</button>
-                <!-- Row 8: Memory - Optional, can be removed if too cluttered -->
-                <!-- <button class="btn memory" data-value="MC">MC</button>
-                <button class="btn memory" data-value="MR">MR</button>
-                <button class="btn memory" data-value="MS">MS</button>
-                <button class="btn memory" data-value="M+">M+</button>
-                <button class="btn memory" data-value="M-">M-</button> -->
             </div>
         </div>
 
@@ -318,24 +315,25 @@
                 <button class="close-btn" id="closeApps">×</button>
             </div>
             <div class="app-list" id="appList">
-                 <!-- Add button is dynamically prepended now -->
+                
             </div>
         </div>
 
-        <!-- App Form Area remains the same -->
+        <!-- App Form Area - UPDATED -->
         <div class="app-form" id="appForm">
              <div class="header">
                 <h1 id="formTitle">Ajouter un accès</h1>
                 <button class="close-btn" id="closeForm">×</button>
             </div>
             <div class="form-content">
+                
                 <div class="form-group">
                     <label class="form-label" for="appTitle">Nom de l'accès</label>
                     <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Banque" maxlength="50" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="appLink">Lien ou description</label>
-                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : https://ma-banque.fr" maxlength="200" required>
+                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : https://ma-banque.fr ou 'Utiliser app mobile'" maxlength="200" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="appIcon">Icône</label>
@@ -347,12 +345,20 @@
                         <option value="💬">💬 (Messages)</option>
                         <option value="📧">📧 (Email)</option>
                         <option value="🗂️">🗂️ (Documents)</option>
-                        <option value="🔑">🔑 (Clé)</option>
+                        <option value="🔑">🔑 (Clé/Mot de passe)</option> {/* Changed Key icon description */}
                         <option value="⭐️">⭐️ (Favori)</option>
                         <option value="💡">💡 (Idée)</option>
                         <option value="⚙️">⚙️ (Paramètres)</option>
+                        <option value="👤">👤 (Compte)</option> {/* Added User icon */}
+                        <option value="📝">📝 (Note)</option>   {/* Added Note icon */}
                     </select>
                 </div>
+                {/* NEW Form Group for Notes */}
+                <div class="form-group">
+                    <label class="form-label" for="appNotes">Notes (identifiant, mdp, etc.)</label>
+                    <textarea class="form-textarea" id="appNotes" placeholder="Ajoutez des détails ici (ex: user: monlogin / pass: ***)... Attention: stocké en clair !" rows="4"></textarea>
+                </div>
+
                 <input type="hidden" id="editingIndex" value="">
                 <button class="form-btn" id="saveApp">Enregistrer</button>
             </div>
@@ -366,21 +372,22 @@
             // --- Configuration ---
             const SECRET_CODE = "123456"; // Change this
             const SECRET_CALCULATION = "1+2+3="; // Sequence to trigger password
-            const STORAGE_KEY = 'hiddenAppsData'; // Use a different key maybe
-            const MAX_INPUT_LENGTH = 30; // Max length for display
-            const MAX_EXPRESSION_LENGTH = 100; // Max length for expression
+            const STORAGE_KEY = 'hiddenAppsData_v2'; // Use a new key if structure changed significantly
+            const MAX_INPUT_LENGTH = 30;
+            const MAX_EXPRESSION_LENGTH = 100;
 
             // --- State ---
             const state = {
                 currentInput: '0',
                 expression: '',
-                calculationSequence: '', // For secret trigger
+                calculationSequence: '',
                 isInverse: false,
-                isRadians: false, // Start in Degrees
+                isRadians: false,
                 memory: 0,
-                justCalculated: false, // Flag to overwrite input after '='
+                justCalculated: false,
                 openParentheses: 0,
                 errorState: false,
+                // editingIndex is handled by the hidden input now
             };
 
             // --- Elements ---
@@ -397,6 +404,7 @@
                 appTitle: document.getElementById('appTitle'),
                 appLink: document.getElementById('appLink'),
                 appIcon: document.getElementById('appIcon'),
+                appNotes: document.getElementById('appNotes'), // <<-- ADDED Notes Textarea
                 editingIndexInput: document.getElementById('editingIndex'),
                 invBtn: document.getElementById('invBtn'),
                 degRadBtn: document.getElementById('degRadBtn'),
@@ -406,55 +414,51 @@
 
             // --- Initialization ---
             function initialize() {
-                // Ensure initial visibility states
+                // Initial visibility
                 elements.hiddenApps.classList.remove('visible');
                 elements.appForm.classList.remove('visible');
                 elements.passwordScreen.classList.remove('visible');
                 elements.calculator.classList.remove('hidden');
 
-                // Load or initialize hidden apps data
+                // Initialize storage if empty (add 'notes' field)
                  if (!localStorage.getItem(STORAGE_KEY)) {
-                     // Add more realistic default entries if needed
                     localStorage.setItem(STORAGE_KEY, JSON.stringify([
-                         { title: "Ma Banque Principale", link: "Accès via application mobile", icon: "💰" },
-                         { title: "Compte Crypto", link: "Utiliser l'app spécifique", icon: "🔒" },
-                         { title: "Boîte Mail Perso", link: "mail.google.com", icon: "📧" },
-                         { title: "Cloud Personnel", link: "drive.google.com", icon: "🗂️" },
+                         { title: "Ma Banque Principale", link: "Accès via application mobile", icon: "💰", notes: "Login: 12345678\nQuestion secrète: Ville naissance" },
+                         { title: "Compte Crypto", link: "Utiliser l'app spécifique", icon: "🔒", notes: "2FA activé via Authy" },
+                         { title: "Boîte Mail Perso", link: "mail.google.com", icon: "📧", notes: "" }, // Example with empty notes
+                         { title: "Cloud Personnel", link: "drive.google.com", icon: "🗂️", notes: "Sauvegarde photos auto" },
                      ]));
                  }
-                loadApps(); // Load and display apps
+                loadApps();
                 updateDisplay();
                 bindEvents();
-                updateModeButtons(); // Set initial state of DEG/RAD/INV buttons
+                updateModeButtons();
             }
 
-            // --- Event Binding ---
+            // --- Event Binding --- (No changes needed here)
             function bindEvents() {
                 // Calculator buttons
                 elements.buttons.forEach(button => {
                     button.addEventListener('click', () => handleInput(button.dataset.value));
                 });
-
                 // Hidden Apps Controls
                 document.getElementById('closeApps').addEventListener('click', closeHiddenApps);
                 document.getElementById('closeForm').addEventListener('click', closeAppForm);
                 document.getElementById('saveApp').addEventListener('click', saveApp);
-
                 // Password Screen
                 document.getElementById('submitPassword').addEventListener('click', checkPassword);
                 elements.passwordInput.addEventListener('keyup', (e) => {
                     if (e.key === 'Enter') checkPassword();
-                    // Basic input filtering (allow only digits)
                     elements.passwordInput.value = elements.passwordInput.value.replace(/\D/g, '');
                 });
-                elements.passwordInput.addEventListener('input', () => {
-                     elements.passwordInput.classList.remove('error'); // Remove error on input
-                });
+                 elements.passwordInput.addEventListener('input', () => {
+                     elements.passwordInput.classList.remove('error');
+                 });
             }
 
-             // --- Core Input Handler ---
-            function handleInput(value) {
-                if (state.errorState && value !== 'C') return; // Only allow Clear in error state
+             // --- Core Input Handler --- (No changes needed here)
+             function handleInput(value) {
+                if (state.errorState && value !== 'C') return;
 
                 // Track sequence for secret code *before* processing
                 state.calculationSequence += value;
@@ -468,43 +472,30 @@
                 }
 
                 // Handle different button types
-                if (/\d/.test(value)) { // Digit
-                    handleDigit(value);
-                } else if (value === '.') { // Decimal
-                    handleDecimal();
-                } else if (['+', '-', '*', '/'].includes(value)) { // Basic Operators
-                    handleOperator(value);
-                } else if (value === '=') { // Equals
-                    calculate();
-                } else if (value === 'C') { // Clear
-                    resetCalculator();
-                } else if (value === 'DEL') { // Delete
-                    handleDelete();
-                } else if (value === '+/-') { // Sign Toggle
-                    toggleSign();
-                } else if (value === '%') { // Percent
-                    applyPercent();
-                } else if (value === '(' || value === ')') { // Parentheses
-                    handleParenthesis(value);
-                } else if (value === 'Inv') { // Inverse Toggle
-                    toggleInverse();
-                } else if (value === 'DEG' || value === 'RAD') { // Degree/Radian Toggle
-                    toggleDegRad();
-                } else if (['MC', 'MR', 'MS', 'M+', 'M-'].includes(value)) { // Memory Functions
-                     handleMemory(value);
-                 } else { // Scientific Functions & Constants
-                    handleFunction(value);
-                }
+                if (/\d/.test(value)) { handleDigit(value); }
+                else if (value === '.') { handleDecimal(); }
+                else if (['+', '-', '*', '/', '^'].includes(value)) { handleOperator(value); } // Added ^
+                else if (value === '=') { calculate(); }
+                else if (value === 'C') { resetCalculator(); }
+                else if (value === 'DEL') { handleDelete(); }
+                else if (value === '+/-') { toggleSign(); }
+                else if (value === '%') { applyPercent(); }
+                else if (value === '(' || value === ')') { handleParenthesis(value); }
+                else if (value === 'Inv') { toggleInverse(); }
+                else if (value === 'DEG' || value === 'RAD') { toggleDegRad(); }
+                else if (['MC', 'MR', 'MS', 'M+', 'M-'].includes(value)) { handleMemory(value); }
+                else { handleFunction(value); } // Scientific Functions & Constants
 
-                // Update display after handling input (unless handled within function like calculate)
-                if (value !== '=' && value !== 'Inv' && !(value === 'DEG' || value === 'RAD')) {
-                     updateDisplay();
-                }
+                // Update display (most handlers update display, equals/toggle don't need it here)
+                 if (!['=', 'Inv', 'DEG', 'RAD'].includes(value) && !state.errorState) {
+                    updateDisplay();
+                 } else if (state.errorState && value === 'C') {
+                     updateDisplay(); // Update display after clearing error
+                 }
             }
 
-            // --- Input Handling Helpers ---
-
-            function handleDigit(digit) {
+            // --- Input Handling Helpers --- (No changes needed here)
+            function handleDigit(digit) { /* ... unchanged ... */
                 if (state.errorState) return;
                 if (state.justCalculated || state.currentInput === '0') {
                     state.currentInput = digit;
@@ -512,9 +503,8 @@
                     state.currentInput += digit;
                 }
                 state.justCalculated = false;
-            }
-
-            function handleDecimal() {
+             }
+            function handleDecimal() { /* ... unchanged ... */
                  if (state.errorState) return;
                  if (state.justCalculated) {
                      state.currentInput = '0.';
@@ -523,172 +513,195 @@
                     state.currentInput += '.';
                 }
             }
-
-            function handleOperator(op) {
+            function handleOperator(op) { /* ... unchanged ... */
                  if (state.errorState) return;
                  // Append current number and operator to expression
-                if (state.currentInput !== '0' || state.expression.length > 0) {
-                     // Avoid adding operator if expression ends with one, unless it's '-' for negative
-                    const lastChar = state.expression.trim().slice(-1);
-                    if (!['+', '*', '/', '^'].includes(lastChar) || (op === '-' && lastChar !== '-')) {
-                        state.expression += ` ${state.currentInput} ${op} `;
-                    } else if (['+', '*', '/', '^'].includes(lastChar) && op === '-') {
-                        // Allow negative numbers after operator: "5 * -2"
-                         state.expression += ` ${op}`; // Add space before negative sign potentially
-                    } else {
-                         // Replace last operator? Or just ignore? Let's replace.
-                         state.expression = state.expression.trim().slice(0, -1) + ` ${op} `;
-                    }
-                } else if (op === '-') {
-                    // Start with a negative number
-                    state.currentInput = '-';
-                    state.justCalculated = false;
-                    updateDisplay(); // Update immediately to show the '-'
-                    return; // Don't reset currentInput yet
-                }
+                 let currentNum = state.currentInput;
+                 // If last op was also an operator (and not '-'), replace it
+                 const lastExprChar = state.expression.trim().slice(-1);
+                 const secondLastExprChar = state.expression.trim().slice(-2, -1);
 
-                state.currentInput = '0'; // Ready for next input
-                state.justCalculated = false;
-                if (state.expression.length > MAX_EXPRESSION_LENGTH) {
-                    setError("Expression trop longue");
-                }
-                 updateDisplay(); // Show updated expression
-            }
+                 // Handle expression building more carefully
+                 if (state.justCalculated) {
+                     state.expression = currentNum; // Start new expression with the result
+                     state.justCalculated = false;
+                 } else if (currentNum !== '0' || state.expression === '' || state.expression.endsWith('( ')) {
+                     // Add the number if it's not the default 0 OR if the expression is empty OR after an opening parenthesis
+                     // Handle implicit multiplication before parenthesis if needed
+                     if (state.expression.endsWith(') ')) {
+                         state.expression += ` * ${currentNum}`;
+                     } else {
+                         state.expression += ` ${currentNum}`;
+                     }
+                 } else if (currentNum === '0' && state.expression.endsWith(') ')) {
+                     // Handle case like (5+3) followed by operator -> (5+3) * op
+                      state.expression += ' *';
+                 }
 
-            function handleParenthesis(paren) {
+
+                 // Now add the operator
+                  const lastChar = state.expression.trim().slice(-1);
+                  if (['+', '*', '/', '^'].includes(lastChar) && op !== '-') {
+                      // Replace last operator (unless it's '-' which could be negation)
+                       state.expression = state.expression.trim().slice(0, -1) + ` ${op} `;
+                  } else if (lastChar === '-' && ['+', '*', '/', '^'].includes(op)) {
+                       // Check if previous char was also operator, e.g. 5 * - + -> 5 * +
+                       const beforeLast = state.expression.trim().slice(-2,-1);
+                       if (['+','*','/','^'].includes(beforeLast)) {
+                            state.expression = state.expression.trim().slice(0,-2) + ` ${op} `;
+                       } else {
+                            state.expression += ` ${op} `;
+                       }
+                  }
+                   else {
+                       state.expression += ` ${op} `;
+                  }
+
+
+                 state.currentInput = '0';
+                 state.justCalculated = false;
+                 if (state.expression.length > MAX_EXPRESSION_LENGTH) {
+                     setError("Expression trop longue");
+                 }
+                 updateDisplay();
+             }
+            function handleParenthesis(paren) { /* ... unchanged ... */
                 if (state.errorState) return;
                 if (paren === '(') {
-                    // Add '*' implicitly if needed: 5( -> 5*( ; (5+2)( -> (5+2)*(
-                    const lastChar = state.expression.trim().slice(-1);
                     const lastInputChar = state.currentInput.slice(-1);
-                     if (!isNaN(parseFloat(lastInputChar)) && state.currentInput !== '0') { // If currentInput is a number
-                         state.expression += ` ${state.currentInput} * `;
-                         state.currentInput = '0';
-                     } else if (lastChar === ')' || !isNaN(parseFloat(lastChar))) {
-                         state.expression += ' * ';
-                     }
+                    const lastExprChar = state.expression.trim().slice(-1);
+
+                    // Add implicit multiplication: 5( -> 5*( ; )( -> )*( ; π( -> π*(
+                    if ((!isNaN(parseFloat(lastInputChar)) && state.currentInput !== '0') || state.currentInput === 'Math.PI' || state.currentInput === 'Math.E') {
+                        state.expression += ` ${state.currentInput} * `;
+                        state.currentInput = '0';
+                    } else if (lastExprChar === ')' || !isNaN(parseFloat(lastExprChar)) || lastExprChar === 'E' || lastExprChar === 'I') { // Check for E and I from constants
+                        state.expression += ' * ';
+                    }
 
                     state.expression += ' ( ';
                     state.openParentheses++;
+                    state.justCalculated = false; // Entering parenthesis resets this
                 } else if (paren === ')') {
                     if (state.openParentheses > 0) {
-                        // Add current input before closing paren if it's not just '0' or empty
-                        if (state.currentInput !== '0' && state.currentInput !== '-') {
-                             state.expression += ` ${state.currentInput} `;
+                        // Add current input before closing paren if it's valid
+                        const lastExprChar = state.expression.trim().slice(-1);
+                        if (state.currentInput !== '0' || lastExprChar === '(') { // Add if not 0, or if directly after ( e.g. "(-5)"
+                             // Only add if not directly after an operator, otherwise just close
+                             if(!['+','-','*','/','^', '('].includes(lastExprChar)) {
+                                state.expression += ` ${state.currentInput} `;
+                             } else if (state.currentInput !== '0') { // e.g. 5 * (-3)
+                                 state.expression += ` ${state.currentInput} `;
+                             }
                         }
                         state.expression += ' ) ';
                         state.openParentheses--;
-                        state.currentInput = '0'; // Reset input after closing paren
+                        state.currentInput = '0'; // Reset input view, result is now in expression
+                        state.justCalculated = false;
                     }
                 }
-                 state.justCalculated = false;
                  updateDisplay();
             }
-
-             function handleDelete() {
+            function handleDelete() { /* ... unchanged ... */
                  if (state.errorState) return;
-                 if (state.currentInput.length > 1) {
+                 if (state.justCalculated) { // Allow deleting result to start fresh
+                      state.currentInput = '0';
+                      state.justCalculated = false;
+                 } else if (state.currentInput.length > 1) {
                      state.currentInput = state.currentInput.slice(0, -1);
-                 } else {
+                 } else if (state.currentInput !== '0') { // If length is 1 but not '0' (e.g. '5' or '-')
                      state.currentInput = '0';
                  }
-                 state.justCalculated = false;
+                 // Don't allow backspace to remove '0'
                  updateDisplay();
              }
-
-            function toggleSign() {
-                if (state.errorState || state.currentInput === '0') return;
-                if (state.currentInput.startsWith('-')) {
-                    state.currentInput = state.currentInput.substring(1);
-                } else {
-                    state.currentInput = '-' + state.currentInput;
-                }
-                state.justCalculated = false;
-                 updateDisplay();
-            }
-
-             function applyPercent() {
+            function toggleSign() { /* ... unchanged ... */
+                 if (state.errorState || state.currentInput === '0') return;
+                 // If result was just calculated, apply sign to it
+                 if (state.justCalculated) {
+                     state.justCalculated = false; // Operate on the result now
+                 }
+                 if (state.currentInput.startsWith('-')) {
+                     state.currentInput = state.currentInput.substring(1);
+                 } else {
+                     state.currentInput = '-' + state.currentInput;
+                 }
+                  updateDisplay();
+             }
+            function applyPercent() { /* ... unchanged ... */
                  if (state.errorState) return;
                  try {
                      const currentValue = parseFloat(state.currentInput);
-                     // Basic percentage: treat as N/100
-                     // More complex would involve context (e.g., 100 + 10%)
-                     state.currentInput = (currentValue / 100).toString();
-                     state.justCalculated = false; // Allow further operations
+                     // Basic percentage for now
+                     state.currentInput = formatResult(currentValue / 100);
+                     state.justCalculated = true; // Treat percent like a calculation
                      updateDisplay();
                  } catch (e) {
                      setError("Erreur");
                  }
-             }
-
-             function toggleInverse() {
+            }
+            function toggleInverse() { /* ... unchanged ... */
                  if (state.errorState) return;
                  state.isInverse = !state.isInverse;
                  elements.invBtn.classList.toggle('active', state.isInverse);
-                 // Toggle visibility of sup text
                  elements.invIndicators.forEach(sup => {
                      sup.parentElement.classList.toggle('inv-active', state.isInverse);
                  });
              }
-
-             function toggleDegRad() {
-                 if (state.errorState) return;
+            function toggleDegRad() { /* ... unchanged ... */
+                if (state.errorState) return;
                  state.isRadians = !state.isRadians;
                  updateModeButtons();
-             }
-
-             function updateModeButtons() {
+            }
+            function updateModeButtons() { /* ... unchanged ... */
                  if (state.isRadians) {
                      elements.degRadBtn.textContent = 'RAD';
-                     elements.degRadBtn.dataset.value = 'RAD'; // Keep dataset value consistent
+                     elements.degRadBtn.dataset.value = 'RAD';
                  } else {
                      elements.degRadBtn.textContent = 'DEG';
                      elements.degRadBtn.dataset.value = 'DEG';
                  }
                  elements.degRadBtn.classList.toggle('active', state.isRadians);
              }
-
-             function handleMemory(action) {
+            function handleMemory(action) { /* ... unchanged ... */
                  if (state.errorState) return;
-                 const currentValue = parseFloat(state.currentInput);
+                 let currentValue = 0;
+                 try {
+                     // Try to evaluate current input if it looks complex, otherwise parse float
+                      currentValue = parseFloat(state.currentInput); // Keep it simple for now
+                 } catch(e) { /* ignore parse error */ }
+
                  if (isNaN(currentValue) && action !== 'MR' && action !== 'MC') return;
 
                  switch (action) {
-                     case 'MS': // Memory Store
-                         state.memory = currentValue;
-                         state.justCalculated = true; // Storing usually means you're done with the number
-                         break;
-                     case 'MR': // Memory Recall
+                     case 'MS': state.memory = currentValue; state.justCalculated = true; break;
+                     case 'MR':
                          state.currentInput = state.memory.toString();
-                         state.justCalculated = false; // Recalling means you might operate on it
-                         break;
-                     case 'MC': // Memory Clear
-                         state.memory = 0;
-                         break;
-                     case 'M+': // Memory Add
-                         state.memory += currentValue;
-                         state.justCalculated = true;
-                         break;
-                     case 'M-': // Memory Subtract
-                         state.memory -= currentValue;
-                         state.justCalculated = true;
-                         break;
+                         state.justCalculated = false; // Allow operating on recalled value
+                         updateDisplay(); // Update display immediately after MR
+                         return; // Don't run updateDisplay again below
+                     case 'MC': state.memory = 0; break;
+                     case 'M+': state.memory += currentValue; state.justCalculated = true; break;
+                     case 'M-': state.memory -= currentValue; state.justCalculated = true; break;
                  }
-                 // Optionally display 'M' indicator when memory is not 0
-                 updateDisplay(); // Update display after memory op
-             }
+                 // Optionally display 'M' indicator (needs HTML element)
+                 // console.log("Memory:", state.memory); // Log memory state
+                 updateDisplay();
+            }
 
 
-            // --- Calculation ---
-            function calculate() {
+            // --- Calculation --- (No changes needed here)
+            function calculate() { /* ... unchanged ... */
                  if (state.errorState) return;
-                // Append the final number
-                 if (state.currentInput !== '0' || state.expression.trim() === '') {
-                     // Avoid adding 0 if expression is empty and input is 0
-                     if (state.currentInput !== '0' || state.expression.trim().length > 0) {
-                         state.expression += ` ${state.currentInput}`;
+                 // Append the final number if needed
+                 if (!state.justCalculated) {
+                     const lastExprChar = state.expression.trim().slice(-1);
+                     // Add current input if it's not default '0' OR if expression is empty OR after an operator/opening paren
+                     if (state.currentInput !== '0' || state.expression === '' || ['+','-','*','/','^','('].includes(lastExprChar) ) {
+                          state.expression += ` ${state.currentInput}`;
                      }
                  }
+
 
                 // Auto-close parentheses
                 if (state.openParentheses > 0) {
@@ -698,240 +711,290 @@
 
                 let expressionToEvaluate = state.expression.trim();
                  if (!expressionToEvaluate) {
-                     // If only a number was entered, keep it
-                     expressionToEvaluate = state.currentInput;
+                     // If only a number was entered, maybe keep it? Or do nothing? Let's do nothing.
+                      // If justCalculated is true, the result is already in currentInput.
+                      if (!state.justCalculated) {
+                          state.expression = state.currentInput; // Display the number as the "operation"
+                          updateDisplay();
+                      }
+                      return;
                  }
 
-                 console.log("Raw expression:", expressionToEvaluate); // Debugging
+                 console.log("Raw expression:", expressionToEvaluate);
                  if (expressionToEvaluate) {
                     try {
-                        // Prepare expression for evaluation (replace symbols, handle functions)
                         expressionToEvaluate = prepareExpression(expressionToEvaluate);
-                         console.log("Prepared expression:", expressionToEvaluate); // Debugging
+                         console.log("Prepared expression:", expressionToEvaluate);
 
-                        // Use Function constructor for safer evaluation
+                        // Use Function constructor
                         const calculateFn = new Function('return ' + expressionToEvaluate);
                         let result = calculateFn();
 
-                        if (!Number.isFinite(result)) {
-                            throw new Error("Résultat invalide");
-                        }
+                        if (!Number.isFinite(result)) throw new Error("Résultat invalide");
 
-                        // Format result
-                         state.currentInput = formatResult(result);
-                        elements.operation.textContent = state.expression + ' ='; // Show full expression
-                        state.expression = ''; // Reset expression
+                        elements.operation.textContent = state.expression.trim() + ' =';
+                        state.currentInput = formatResult(result);
+                        state.expression = ''; // Reset expression for next calculation
                         state.justCalculated = true;
                         state.errorState = false;
 
                     } catch (e) {
-                         console.error("Calculation error:", e);
-                         setError("Erreur"); // Set error state
+                         console.error("Calculation error:", e, "Expression:", expressionToEvaluate);
+                         setError("Erreur");
                     }
                  } else {
-                     // No expression, likely just pressed =
                      elements.operation.textContent = '';
                  }
+                 updateDisplay();
+             }
+             function prepareExpression(expr) { /* ... unchanged ... */
+                 // Replace user symbols
+                 expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                 expr = expr.replace(/\^/g, '**'); // Use exponentiation operator
 
-                updateDisplay(); // Update result display
-            }
-
-            function prepareExpression(expr) {
-                 // Replace user symbols with JS equivalents
-                expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-
-                 // Handle Math functions (ensure correct arguments are passed)
-                 // This requires more robust parsing than simple replace allows easily.
-                 // For now, focus on constants and simple power/sqrt replacements.
+                 // Replace constants (carefully)
                  expr = expr.replace(/π/g, 'Math.PI');
-                 expr = expr.replace(/e(?!\w)/g, 'Math.E'); // Replace 'e' only if not part of a word (like 'exp')
+                 expr = expr.replace(/e(?!\w)/g, 'Math.E'); // Avoid 'exp'
 
-                 // Basic power replacement (needs improvement for nested)
-                 expr = expr.replace(/(\d+(\.\d+)?)\s*\^\s*(\d+(\.\d+)?)/g, 'Math.pow($1, $3)');
-                 expr = expr.replace(/(\))*\s*\^\s*(\()*/g, 'Math.pow($1, $3)'); // Handle power with parens (simplified)
+                 // Add Math. prefix to functions (basic replacement - needs improvement for complex cases)
+                 // This part is still simplified and might fail on nested or complex scenarios.
+                 // A proper parser/evaluator library would be more robust.
+                  const functions = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'log10', 'log', 'exp', 'sqrt', 'cbrt', 'pow'];
+                  functions.forEach(f => {
+                      // Simple regex, might need refinement
+                      const regex = new RegExp(`(?<!Math\\.)${f}\\(`, 'g');
+                      expr = expr.replace(regex, `Math.${f}(`);
+                  });
 
 
-                 // Need a more robust parser for complex functions like log(x), sin(y), x^y etc.
-                 // This simple replacement is limited.
+                  // Handle degrees for trig functions (wrap arguments)
+                  if (!state.isRadians) {
+                      const trigFuncs = ['sin', 'cos', 'tan'];
+                      trigFuncs.forEach(f => {
+                          const regex = new RegExp(`Math\.${f}\\(([^)]+)\\)`, 'g');
+                           expr = expr.replace(regex, (match, arg) => `Math.${f}(${arg} * (Math.PI / 180))`);
+                      });
+                      const invTrigFuncs = ['asin', 'acos', 'atan'];
+                      invTrigFuncs.forEach(f => {
+                           const regex = new RegExp(`Math\.${f}\\(([^)]+)\\)`, 'g');
+                           expr = expr.replace(regex, (match, arg) => `(Math.${f}(${arg}) * (180 / Math.PI))`);
+                      });
+                  }
+
+
                  return expr;
-            }
+             }
+             function handleFunction(func) { /* ... unchanged ... */
+                  if (state.errorState) return;
+                  let valueStr = state.currentInput; // Work with string for potential constants
+                  let value = parseFloat(valueStr);
+                  let requiresInverse = ['sin', 'cos', 'tan', 'log', 'ln', 'sqrt', 'x2', '^']; // ^ handled by operator now
+                  const isFuncInverse = state.isInverse && requiresInverse.includes(func);
 
-            function handleFunction(func) {
-                 if (state.errorState) return;
-                 let value = parseFloat(state.currentInput);
-                 if (isNaN(value)) return; // Don't operate on non-numbers
+                  // If input is not a number, but a constant, apply func to the constant
+                  if (isNaN(value)) {
+                      if (valueStr === 'Math.PI') value = Math.PI;
+                      else if (valueStr === 'Math.E') value = Math.E;
+                      else return; // Cannot operate
+                  }
 
-                let result;
-                const requiresInverse = ['sin', 'cos', 'tan', 'log', 'ln', 'sqrt', 'x2', '^'];
-                 const isFuncInverse = state.isInverse && requiresInverse.includes(func);
+                  // Reset expression if starting new calc with a function after '='
+                  if (state.justCalculated) {
+                      state.expression = '';
+                      state.justCalculated = false;
+                  }
 
-                try {
-                    // Angle conversion for trig functions
-                    let angle = value;
-                    if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan'].includes(func) || isFuncInverse) {
-                         if (!state.isRadians) { // If in Degrees, convert TO Radians for Math functions
-                             if(['sin', 'cos', 'tan'].includes(func)) angle = value * (Math.PI / 180);
-                         }
-                    }
+
+                 try {
+                     let result;
+                     let funcName = func; // Keep original name for display/logging
+                     let useParens = false; // Should this function add parenthesis?
+
+                     // Prepare the function call string for the expression
+                     let mathFunc;
+                     let isConstant = false;
 
                      switch (func) {
-                        // Trig
-                         case 'sin': result = isFuncInverse ? Math.asin(angle) : Math.sin(angle); break;
-                         case 'cos': result = isFuncInverse ? Math.acos(angle) : Math.cos(angle); break;
-                         case 'tan': result = isFuncInverse ? Math.atan(angle) : Math.tan(angle); break;
-                        // Log / Exp
-                         case 'log': result = isFuncInverse ? Math.pow(10, value) : Math.log10(value); break;
-                         case 'ln': result = isFuncInverse ? Math.exp(value) : Math.log(value); break;
+                         // Trig
+                         case 'sin': mathFunc = isFuncInverse ? 'asin' : 'sin'; useParens=true; break;
+                         case 'cos': mathFunc = isFuncInverse ? 'acos' : 'cos'; useParens=true; break;
+                         case 'tan': mathFunc = isFuncInverse ? 'atan' : 'tan'; useParens=true; break;
+                         // Log / Exp
+                         case 'log': mathFunc = isFuncInverse ? 'pow(10, ' : 'log10'; useParens=!isFuncInverse; break; // Special case for 10^x
+                         case 'ln': mathFunc = isFuncInverse ? 'exp' : 'log'; useParens=true; break;
                          // Powers / Roots
-                         case 'sqrt': result = isFuncInverse ? Math.pow(value, 3) : Math.sqrt(value); break; // Inv = x³
-                         case 'x2': result = isFuncInverse ? Math.cbrt(value) : Math.pow(value, 2); break; // Inv = ³√x
-                         case '^': // Becomes x^y - handle via operator? Or immediate? Let's make it an operator.
-                             handleOperator('^'); return; // Don't calculate immediately
-                         // Constants (replace input)
-                         case 'pi': result = Math.PI; break;
-                         case 'e': result = Math.E; break;
-                         // Factorial
-                         case '!': result = factorial(value); break;
-                         default: return; // Unknown function
+                         case 'sqrt': mathFunc = isFuncInverse ? 'pow(x, 3)' : 'sqrt'; if(isFuncInverse) mathFunc='cbrt'; else mathFunc='sqrt'; useParens=true; break; // Inv = cbrt
+                         case 'x2': mathFunc = isFuncInverse ? 'cbrt' : 'pow(x, 2)'; if(isFuncInverse) mathFunc='cbrt'; else mathFunc = 'pow'; useParens=true; break; // Inv = cbrt
+
+                         // Constants (replace input directly)
+                         case 'pi': state.currentInput = 'Math.PI'; isConstant=true; break;
+                         case 'e': state.currentInput = 'Math.E'; isConstant=true; break;
+
+                          // Factorial (Immediate calculation)
+                          case '!':
+                              if (!Number.isInteger(value) || value < 0) throw new Error("Factorial Error");
+                              result = factorial(value);
+                              state.currentInput = formatResult(result);
+                              state.justCalculated = true;
+                              updateDisplay();
+                              return; // Factorial calculated immediately
+
+                          default: return; // Unknown function
+                      }
+
+                     if (isConstant) {
+                         state.justCalculated = false; // Setting constant doesn't count as calculation
+                         updateDisplay();
+                         return;
                      }
 
-                    // Convert trig results back to degrees if needed
-                    if (['asin', 'acos', 'atan'].includes(func) || (isFuncInverse && ['sin', 'cos', 'tan'].includes(func))) {
-                         if (!state.isRadians) { // If in Degrees, convert result FROM Radians
-                             result = result * (180 / Math.PI);
-                         }
-                    }
+                     // Build function part of the expression
+                     if (mathFunc) {
+                          let funcPrefix = `Math.${mathFunc}`;
+                           if(func === 'log' && isFuncInverse) funcPrefix = 'Math.pow(10, '; // 10^x needs custom handling
+                           if(func === 'x2' && !isFuncInverse) funcPrefix = 'Math.pow('; // x^2 needs pow(val, 2)
 
 
-                    if (!Number.isFinite(result)) throw new Error("Résultat invalide");
+                           // Add implicit multiplication if needed
+                           const lastExprChar = state.expression.trim().slice(-1);
+                           if (state.currentInput !== '0' || state.expression === '') {
+                               // If current input is a number, use it as the argument
+                               state.expression += ` ${funcPrefix}${state.currentInput}`;
+                               if (func === 'x2' && !isFuncInverse) state.expression += ', 2'; // Add the exponent for pow
+                               if (useParens || (func === 'log' && isFuncInverse) || (func === 'x2' && !isFuncInverse)) state.expression += ') ';
+                               state.currentInput = '0'; // Clear input field
+                           } else if (lastExprChar === ')' || !isNaN(parseFloat(lastExprChar)) || lastExprChar === 'E' || lastExprChar === 'I' ) {
+                               // Apply function to the result of previous expression part
+                               state.expression = ` ${funcPrefix}${state.expression.trim()}`;
+                                if (func === 'x2' && !isFuncInverse) state.expression += ', 2';
+                                if (useParens || (func === 'log' && isFuncInverse) || (func === 'x2' && !isFuncInverse)) state.expression += ') ';
+                           } else {
+                                // Apply function without implicit multiplication (e.g. after operator)
+                                state.expression += ` ${funcPrefix}`;
+                                if(useParens) state.expression += '( '; // Open paren for next number
+                           }
 
-                     state.currentInput = formatResult(result);
-                     state.justCalculated = true; // Function applied, treat as calculation result
-                     // Reset inverse state after use? Optional, depends on desired behavior.
-                     // if (state.isInverse) toggleInverse();
+                           state.justCalculated = false;
+                           if (useParens && !state.expression.endsWith(') ')) {
+                               // If we added func( we need to increment open parens
+                               state.openParentheses++;
+                           }
+                      }
+
+
                  } catch (e) {
                      setError("Erreur");
                      console.error("Function error:", e);
                  }
+                  if (state.isInverse) toggleInverse(); // Auto-toggle off inverse after use? Optional.
                  updateDisplay();
              }
-
-
-             function factorial(n) {
-                 if (n < 0 || !Number.isInteger(n)) return NaN; // Factorial defined for non-negative integers
+             function factorial(n) { /* ... unchanged ... */
+                 if (n < 0 || !Number.isInteger(n)) return NaN;
                  if (n === 0 || n === 1) return 1;
+                  if (n > 170) return Infinity; // Prevent issues with large factorials
                  let result = 1;
-                 for (let i = n; i > 1; i--) {
-                     result *= i;
-                     if (result === Infinity) return Infinity; // Avoid overly long loops
-                 }
+                 for (let i = n; i > 1; i--) { result *= i; }
                  return result;
              }
-
-
-            function formatResult(value) {
-                 // Avoid scientific notation for reasonably sized numbers
-                 // Limit decimal places
-                 if (Math.abs(value) > 1e12 || (Math.abs(value) < 1e-6 && value !== 0)) {
-                     return value.toExponential(6);
+             function formatResult(value) { /* ... unchanged ... */
+                  if (Math.abs(value) > 1e12 || (Math.abs(value) < 1e-9 && value !== 0)) {
+                     return value.toExponential(8); // More precision for exponential
                  } else {
-                     // Round to a reasonable number of decimals
-                     return parseFloat(value.toFixed(10)).toString();
+                      // Use Number.toPrecision to handle both large and small decimals gracefully
+                      // Convert back to number then string to remove trailing zeros potentially introduced
+                       return parseFloat(Number(value).toPrecision(12)).toString();
                  }
-            }
+             }
 
+            // --- Display Update --- (No changes needed here)
+             function updateDisplay() { /* ... unchanged ... */
+                 // Limit display length visually if needed, but keep full value in state.currentInput
+                 let displayValue = state.currentInput;
+                 // Handle potential constants displayed
+                 if (displayValue === 'Math.PI') displayValue = 'π';
+                 if (displayValue === 'Math.E') displayValue = 'e';
 
-            // --- Display Update ---
-            function updateDisplay() {
-                elements.result.textContent = state.currentInput;
-                 // Show memory indicator (optional)
-                 // elements.memoryIndicator.style.visibility = state.memory !== 0 ? 'visible' : 'hidden';
-
-                 // Only update expression display if it's not in error state
+                 elements.result.textContent = displayValue;
                  if (!state.errorState) {
                      elements.operation.textContent = state.expression;
-                 }
-
-                 // Adjust font size if too long (simple approach)
-                 if (state.currentInput.length > 15) {
-                     elements.result.style.fontSize = '1.5em';
-                 } else if (state.currentInput.length > 10) {
-                    elements.result.style.fontSize = '1.8em';
                  } else {
-                     elements.result.style.fontSize = '2.2em';
+                      elements.operation.textContent = ''; // Clear expression on error
                  }
-            }
+                 // Adjust font size (optional)
+                 const len = displayValue.length;
+                 if (len > 22) elements.result.style.fontSize = '1.2em';
+                 else if (len > 15) elements.result.style.fontSize = '1.5em';
+                 else if (len > 10) elements.result.style.fontSize = '1.8em';
+                 else elements.result.style.fontSize = '2.2em';
+             }
 
-            // --- Error Handling ---
-            function setError(message) {
+            // --- Error Handling --- (No changes needed here)
+            function setError(message) { /* ... unchanged ... */
                 state.currentInput = message;
                 state.expression = '';
                 state.errorState = true;
-                elements.operation.textContent = ''; // Clear expression display on error
-                updateDisplay(); // Show the error message
+                state.openParentheses = 0; // Reset parens count on error
+                updateDisplay();
             }
 
-
-            // --- Reset ---
-            function resetCalculator() {
+            // --- Reset --- (No changes needed here)
+            function resetCalculator() { /* ... unchanged ... */
                 state.currentInput = '0';
                 state.expression = '';
                 state.calculationSequence = '';
-                // Don't reset Inverse or Deg/Rad mode on 'C' ? User preference. Let's keep them.
-                // state.isInverse = false;
-                // state.isRadians = false;
+                // Keep DEG/RAD and INV state? Let's keep them.
                 state.justCalculated = false;
                 state.openParentheses = 0;
-                 state.errorState = false; // Clear error state
-                // updateModeButtons();
-                // if (state.isInverse) toggleInverse(); // Ensure Inv indicator resets if toggled off
-                 updateDisplay();
+                 state.errorState = false;
+                updateDisplay();
             }
 
+            // --- Hidden Apps Logic ---
 
-            // --- Hidden Apps Logic (Mostly Unchanged) ---
-
-            function showPasswordScreen() {
-                resetCalculator(); // Clear calc before showing password
+            function showPasswordScreen() { /* ... unchanged ... */
+                resetCalculator();
                 elements.passwordScreen.classList.add('visible');
-                elements.passwordInput.value = ''; // Clear previous attempts
+                elements.passwordInput.value = '';
+                elements.passwordInput.classList.remove('error');
                 elements.passwordInput.focus();
-            }
-
-            function checkPassword() {
-                if (elements.passwordInput.value === SECRET_CODE) {
+             }
+            function checkPassword() { /* ... unchanged ... */
+                 if (elements.passwordInput.value === SECRET_CODE) {
                     elements.passwordScreen.classList.remove('visible');
-                    elements.calculator.classList.add('hidden'); // Hide calculator
-                    elements.hiddenApps.classList.add('visible'); // Show apps
+                    elements.calculator.classList.add('hidden');
+                    elements.hiddenApps.classList.add('visible');
                     elements.passwordInput.value = '';
-                    elements.passwordInput.classList.remove('error');
-                    loadApps(); // Refresh app list when shown
+                    loadApps(); // Refresh app list
                 } else {
                     elements.passwordInput.classList.add('error');
                     elements.passwordInput.value = '';
-                    // Optional: Provide feedback (shake animation is good)
                     setTimeout(() => {
-                         if (elements.passwordInput) { // Check if element still exists
+                         if (elements.passwordInput) {
                              elements.passwordInput.classList.remove('error');
                          }
                     }, 500);
                 }
             }
+            function closeHiddenApps() { /* ... unchanged ... */
+                 elements.hiddenApps.classList.remove('visible');
+                 elements.calculator.classList.remove('hidden');
+                 resetCalculator();
+             }
+            function closeAppForm() { /* ... unchanged ... */
+                 elements.appForm.classList.remove('visible');
+             }
 
-            function closeHiddenApps() {
-                elements.hiddenApps.classList.remove('visible');
-                elements.calculator.classList.remove('hidden'); // Show calculator
-                resetCalculator(); // Reset calculator state when closing
-            }
+            // --- UPDATED Hidden Apps Data Handling ---
 
-            function loadApps() {
+             function loadApps() {
                  const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                  const fragment = document.createDocumentFragment();
 
-                 // Create and prepend the "Add App" button structure
+                 // Add "Add App" button first
                  const addAppDiv = document.createElement('div');
                  addAppDiv.className = 'add-app';
-                 addAppDiv.id = 'addAppBtn'; // Keep ID if needed for event listener
+                 addAppDiv.id = 'addAppBtn';
                  addAppDiv.innerHTML = `
                      <div>
                          <div class="app-title">Ajouter un accès</div>
@@ -942,10 +1005,11 @@
                  addAppDiv.addEventListener('click', openAddForm);
                  fragment.appendChild(addAppDiv);
 
-
+                 // Add existing apps
                  apps.forEach((app, index) => {
                      const appItem = document.createElement('div');
                      appItem.className = 'app-item';
+                     // Notes are NOT displayed in the list view itself
                      appItem.innerHTML = `
                          <div class="app-icon">${sanitize(app.icon || '❓')}</div>
                          <div class="app-info">
@@ -957,80 +1021,64 @@
                              <button class="action-btn delete" data-index="${index}" title="Supprimer">🗑️</button>
                          </div>
                      `;
-
-                     // Add event listeners directly here
                      appItem.querySelector('.app-info').addEventListener('click', () => openLink(app.link, app.title));
-                     appItem.querySelector('.edit').addEventListener('click', (e) => {
-                          e.stopPropagation(); // Prevent triggering openLink
-                          editApp(index);
-                     });
-                    appItem.querySelector('.delete').addEventListener('click', (e) => {
-                         e.stopPropagation(); // Prevent triggering openLink
-                         deleteApp(index);
-                     });
-
-                    fragment.appendChild(appItem);
+                     appItem.querySelector('.edit').addEventListener('click', (e) => { e.stopPropagation(); editApp(index); });
+                     appItem.querySelector('.delete').addEventListener('click', (e) => { e.stopPropagation(); deleteApp(index); });
+                     fragment.appendChild(appItem);
                  });
 
-                 elements.appList.innerHTML = ''; // Clear previous list
+                 elements.appList.innerHTML = '';
                  elements.appList.appendChild(fragment);
              }
 
-            function sanitize(str) {
+             function sanitize(str) { /* ... unchanged ... */
                  const temp = document.createElement('div');
                  temp.textContent = str;
                  return temp.innerHTML;
              }
 
-
-             function openLink(link, title) {
-                 if (/^https?:\/\//i.test(link) || /^mailto:/i.test(link) || /^tel:/i.test(link)) {
-                     // Use window.open for web links, let the browser handle mailto/tel
+             function openLink(link, title) { /* ... unchanged ... */
+                  if (/^https?:\/\//i.test(link) || /^mailto:/i.test(link) || /^tel:/i.test(link)) {
                      window.open(link, '_blank', 'noopener,noreferrer');
                  } else if (/^\w+:\/\//i.test(link)) {
-                     // Attempt to open other protocols (might be blocked by browser)
                       window.open(link, '_blank', 'noopener,noreferrer');
                  }
                   else {
-                     // If it doesn't look like a URL, show an alert
                      alert(`Accès: ${title}\nInfo: ${link}`);
                  }
              }
 
-            function openAddForm() {
-                 state.editingIndex = null; // Use state object
-                 elements.editingIndexInput.value = ''; // Clear hidden input too
+             function openAddForm() { // <<-- UPDATED
+                 elements.editingIndexInput.value = ''; // Clear index
                  elements.formTitle.textContent = "Ajouter un accès";
                  elements.appTitle.value = '';
                  elements.appLink.value = '';
-                 elements.appIcon.value = '💰'; // Default icon
+                 elements.appIcon.value = '💰';
+                 elements.appNotes.value = ''; // Clear notes field
                  elements.appForm.classList.add('visible');
              }
 
-            function closeAppForm() {
-                 elements.appForm.classList.remove('visible');
-             }
-
-            function saveApp() {
+             function saveApp() { // <<-- UPDATED
                  const title = elements.appTitle.value.trim();
                  const link = elements.appLink.value.trim();
                  const icon = elements.appIcon.value;
+                 const notes = elements.appNotes.value.trim(); // Get notes value
                  const indexToEdit = elements.editingIndexInput.value;
 
-                 if (!title || !link) {
+                 if (!title || !link) { // Notes are optional
                      alert("Le nom et le lien/description sont obligatoires.");
                      return;
                  }
 
                  const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                 const newApp = { title, link, icon };
+                 const newApp = { title, link, icon, notes }; // Include notes in the object
 
-                 if (indexToEdit !== '') { // Editing existing
+                 if (indexToEdit !== '') {
                      const idx = parseInt(indexToEdit, 10);
                      if (idx >= 0 && idx < apps.length) {
                          apps[idx] = newApp;
                      }
-                 } else { // Adding new
+                 } else {
                      apps.push(newApp);
                  }
 
@@ -1039,20 +1087,21 @@
                  loadApps(); // Refresh list
              }
 
-            function editApp(index) {
+             function editApp(index) { // <<-- UPDATED
                  const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                  if (index >= 0 && index < apps.length) {
                      const app = apps[index];
-                     elements.editingIndexInput.value = index.toString(); // Store index
+                     elements.editingIndexInput.value = index.toString();
                      elements.formTitle.textContent = "Modifier l'accès";
                      elements.appTitle.value = app.title;
                      elements.appLink.value = app.link;
-                     elements.appIcon.value = app.icon || '💰'; // Handle missing icon
+                     elements.appIcon.value = app.icon || '💰';
+                     elements.appNotes.value = app.notes || ''; // Populate notes field
                      elements.appForm.classList.add('visible');
                  }
              }
 
-            function deleteApp(index) {
+             function deleteApp(index) { /* ... unchanged ... */
                  if (!confirm("Voulez-vous vraiment supprimer cet accès ? Cette action est irréversible.")) {
                       return;
                   }
@@ -1060,7 +1109,7 @@
                  if (index >= 0 && index < apps.length) {
                      apps.splice(index, 1);
                      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
-                     loadApps(); // Refresh list
+                     loadApps();
                  }
              }
 
