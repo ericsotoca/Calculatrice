@@ -15,7 +15,7 @@
         body {
             background-color: #121212;
             color: white;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             padding: 15px;
@@ -32,6 +32,7 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
         
         .calculator {
@@ -55,6 +56,8 @@
             padding: 15px;
             font-size: 2.5em;
             border-bottom: 1px solid #333;
+            overflow-x: auto;
+            white-space: nowrap;
         }
         
         .operation {
@@ -81,10 +84,14 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            outline: none;
             transition: background-color 0.2s;
             min-height: 60px;
             border-radius: 8px;
+            user-select: none;
+        }
+        
+        .btn:hover {
+            background-color: #444;
         }
         
         .btn:active {
@@ -95,12 +102,20 @@
             background-color: #ff9500;
         }
         
+        .btn.operator:hover {
+            background-color: #ffaa33;
+        }
+        
         .btn.operator:active {
             background-color: #ffb143;
         }
         
         .btn.equals {
             background-color: #217af4;
+        }
+        
+        .btn.equals:hover {
+            background-color: #398df5;
         }
         
         .btn.equals:active {
@@ -118,10 +133,12 @@
             flex-direction: column;
             transform: translateY(100vh);
             transition: transform 0.5s ease;
+            visibility: hidden;
         }
         
         .hidden-apps.visible {
             transform: translateY(0);
+            visibility: visible;
         }
         
         .header {
@@ -134,7 +151,6 @@
         
         .header h1 {
             font-size: 1.5em;
-            color: #fff;
         }
         
         .close-btn {
@@ -180,7 +196,6 @@
             margin-bottom: 10px;
             background-color: #333;
             border-radius: 8px;
-            position: relative;
         }
         
         .app-icon {
@@ -197,6 +212,7 @@
         
         .app-info {
             flex: 1;
+            cursor: pointer;
         }
         
         .app-title {
@@ -207,6 +223,9 @@
         .app-desc {
             font-size: 0.8em;
             color: #aaa;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .app-actions {
@@ -241,10 +260,12 @@
             flex-direction: column;
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            visibility: hidden;
         }
         
         .app-form.visible {
             transform: translateX(0);
+            visibility: visible;
         }
         
         .form-content {
@@ -285,12 +306,16 @@
             margin-top: auto;
         }
         
+        .form-btn:hover {
+            background-color: #398df5;
+        }
+        
         .form-btn:active {
             background-color: #4c94f5;
         }
         
         .password-screen {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -301,17 +326,19 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            display: none;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
         .password-screen.visible {
-            display: flex;
+            visibility: visible;
+            opacity: 1;
         }
         
         .password-title {
             font-size: 1.2rem;
             margin-bottom: 20px;
-            color: white;
         }
         
         .password-input {
@@ -338,6 +365,10 @@
             cursor: pointer;
         }
         
+        .password-btn:hover {
+            background-color: #398df5;
+        }
+        
         .password-input.error {
             border-color: #ff0000;
             animation: shake 0.5s;
@@ -351,15 +382,13 @@
     </style>
 </head>
 <body>
-    <!-- Écran de mot de passe -->
     <div class="password-screen" id="passwordScreen">
         <h2 class="password-title">Entrez le code secret</h2>
-        <input type="password" class="password-input" id="passwordInput" maxlength="6">
+        <input type="password" class="password-input" id="passwordInput" maxlength="6" autocomplete="off">
         <button class="password-btn" id="submitPassword">Valider</button>
     </div>
 
     <div class="app-container">
-        <!-- Interface calculatrice (façade) -->
         <div class="calculator" id="calculator">
             <div class="display">
                 <div class="operation" id="operation"></div>
@@ -367,25 +396,21 @@
             </div>
             <div class="buttons">
                 <button class="btn" data-value="C">C</button>
-                <button class="btn" data-value="+/-">+/-</button>
+                <button class="btn" data-value="+/-">±</button>
                 <button class="btn" data-value="%">%</button>
                 <button class="btn operator" data-value="/">÷</button>
-                
                 <button class="btn" data-value="7">7</button>
                 <button class="btn" data-value="8">8</button>
                 <button class="btn" data-value="9">9</button>
                 <button class="btn operator" data-value="*">×</button>
-                
                 <button class="btn" data-value="4">4</button>
                 <button class="btn" data-value="5">5</button>
                 <button class="btn" data-value="6">6</button>
                 <button class="btn operator" data-value="-">−</button>
-                
                 <button class="btn" data-value="1">1</button>
                 <button class="btn" data-value="2">2</button>
                 <button class="btn" data-value="3">3</button>
                 <button class="btn operator" data-value="+">+</button>
-                
                 <button class="btn" data-value="0">0</button>
                 <button class="btn" data-value=".">.</button>
                 <button class="btn" data-value="DEL">⌫</button>
@@ -393,7 +418,6 @@
             </div>
         </div>
         
-        <!-- Interface des accès cachés -->
         <div class="hidden-apps" id="hiddenApps">
             <div class="header">
                 <h1>Accès cachés</h1>
@@ -407,11 +431,9 @@
                     </div>
                     <div class="add-icon">+</div>
                 </div>
-                <!-- Les accès seront ajoutés ici dynamiquement -->
             </div>
         </div>
         
-        <!-- Formulaire d'ajout/édition d'accès -->
         <div class="app-form" id="appForm">
             <div class="header">
                 <h1 id="formTitle">Ajouter un accès</h1>
@@ -420,11 +442,11 @@
             <div class="form-content">
                 <div class="form-group">
                     <label class="form-label" for="appTitle">Nom de l'accès</label>
-                    <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Banque">
+                    <input type="text" class="form-input" id="appTitle" placeholder="Ex. : Banque" maxlength="50" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="appLink">Lien ou description</label>
-                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : https://ma-banque.fr">
+                    <input type="text" class="form-input" id="appLink" placeholder="Ex. : https://ma-banque.fr" maxlength="200" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="appIcon">Icône</label>
@@ -445,190 +467,186 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        (function() {
+            'use strict';
+
             const SECRET_CODE = "123456";
             const SECRET_CALCULATION = "1+2+3=";
-            
-            let currentInput = '0';
-            let currentOperation = '';
-            let previousInput = '';
-            let calculationSequence = '';
-            let editingIndex = null;
-            
-            const calculator = document.getElementById('calculator');
-            const hiddenApps = document.getElementById('hiddenApps');
-            const appForm = document.getElementById('appForm');
-            const passwordScreen = document.getElementById('passwordScreen');
-            const passwordInput = document.getElementById('passwordInput');
-            const resultDisplay = document.getElementById('result');
-            const operationDisplay = document.getElementById('operation');
-            const appList = document.getElementById('appList');
-            const formTitle = document.getElementById('formTitle');
-            
-            if (!localStorage.getItem('hiddenApps')) {
-                localStorage.setItem('hiddenApps', JSON.stringify([
-                    { title: "EasyBourse", link: "https://www.easybourse.com", icon: "💰" },
-                    { title: "La Banque Postale", link: "https://www.labanquepostale.fr", icon: "💰" },
-                    { title: "PayPal", link: "https://www.paypal.com", icon: "💰" },
-                    { title: "Trade Republic", link: "https://app.traderepublic.com", icon: "💰" },
-                    { title: "Facebook", link: "https://www.facebook.com", icon: "🌐" },
-                    { title: "Gmail", link: "https://mail.google.com", icon: "📧" },
-                    { title: "Google Calendar", link: "https://calendar.google.com", icon: "📅" },
-                    { title: "Google Drive", link: "https://drive.google.com", icon: "🗂️" },
-                    { title: "Play Store", link: "https://ericsotoca.github.io/playstore/", icon: "💬" },
-                    { title: "WhatsApp", link: "https://web.whatsapp.com", icon: "💬" },
-                    { title: "Zoom", link: "https://zoom.us/signin", icon: "🎥" }
-                ]));
+            const STORAGE_KEY = 'hiddenApps';
+            const MAX_INPUT_LENGTH = 20;
+
+            const state = {
+                currentInput: '0',
+                currentOperation: '',
+                previousInput: '',
+                calculationSequence: '',
+                editingIndex: null
+            };
+
+            const elements = {
+                calculator: document.getElementById('calculator'),
+                hiddenApps: document.getElementById('hiddenApps'),
+                appForm: document.getElementById('appForm'),
+                passwordScreen: document.getElementById('passwordScreen'),
+                passwordInput: document.getElementById('passwordInput'),
+                result: document.getElementById('result'),
+                operation: document.getElementById('operation'),
+                appList: document.getElementById('appList'),
+                formTitle: document.getElementById('formTitle'),
+                appTitle: document.getElementById('appTitle'),
+                appLink: document.getElementById('appLink'),
+                appIcon: document.getElementById('appIcon')
+            };
+
+            function initialize() {
+                // Ensure initial visibility states
+                elements.hiddenApps.classList.remove('visible');
+                elements.appForm.classList.remove('visible');
+                elements.passwordScreen.classList.remove('visible');
+                elements.calculator.classList.remove('hidden');
+
+                // Log initial state for debugging
+                console.log('Initial state - Calculator visible:', !elements.calculator.classList.contains('hidden'));
+                console.log('Initial state - Hidden Apps hidden:', !elements.hiddenApps.classList.contains('visible'));
+
+                if (!localStorage.getItem(STORAGE_KEY)) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify([
+                        { title: "EasyBourse", link: "https://www.easybourse.com", icon: "💰" },
+                        { title: "La Banque Postale", link: "https://www.labanquepostale.fr", icon: "💰" },
+                        { title: "PayPal", link: "https://www.paypal.com", icon: "💰" },
+                        { title: "Trade Republic", link: "https://app.traderepublic.com", icon: "💰" },
+                        { title: "Facebook", link: "https://www.facebook.com", icon: "🌐" },
+                        { title: "Gmail", link: "https://mail.google.com", icon: "📧" },
+                        { title: "Google Drive", link: "https://drive.google.com", icon: "🗂️" },
+                        { title: "WhatsApp", link: "https://web.whatsapp.com", icon: "💬" }
+                    ]));
+                }
+                loadApps();
+                bindEvents();
             }
-            
-            loadApps();
-            
-            document.querySelectorAll('.btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    handleInput(value);
+
+            function bindEvents() {
+                document.querySelectorAll('.btn').forEach(button => {
+                    button.addEventListener('click', () => handleInput(button.dataset.value));
                 });
-            });
-            
-            document.getElementById('closeApps').addEventListener('click', function() {
-                hiddenApps.classList.remove('visible');
-                calculator.classList.remove('hidden');
-            });
-            
-            document.getElementById('addAppBtn').addEventListener('click', function() {
-                editingIndex = null;
-                formTitle.textContent = "Ajouter un accès";
-                document.getElementById('appTitle').value = '';
-                document.getElementById('appLink').value = '';
-                document.getElementById('appIcon').value = '💰';
-                appForm.classList.add('visible');
-            });
-            
-            document.getElementById('closeForm').addEventListener('click', function() {
-                appForm.classList.remove('visible');
-            });
-            
-            document.getElementById('saveApp').addEventListener('click', function() {
-                const title = document.getElementById('appTitle').value.trim();
-                const link = document.getElementById('appLink').value.trim();
-                const icon = document.getElementById('appIcon').value;
-                
-                if (title && link) {
-                    if (editingIndex === null) {
-                        saveApp(title, link, icon);
-                    } else {
-                        updateApp(editingIndex, title, link, icon);
-                    }
-                    appForm.classList.remove('visible');
-                } else {
-                    alert("Veuillez remplir tous les champs.");
-                }
-            });
-            
-            document.getElementById('submitPassword').addEventListener('click', checkPassword);
-            passwordInput.addEventListener('keyup', function(event) {
-                if (event.key === "Enter") {
-                    checkPassword();
-                }
-            });
-            
-            function handleInput(value) {
-                if (value === "=") {
-                    calculationSequence += "=";
-                    if (calculationSequence.includes(SECRET_CALCULATION)) {
-                        passwordScreen.classList.add('visible');
-                        passwordInput.focus();
-                        calculationSequence = '';
-                        return;
-                    }
-                } else if ("0123456789+-*/".includes(value)) {
-                    calculationSequence += value;
-                    if (calculationSequence.length > 10) {
-                        calculationSequence = calculationSequence.slice(-10);
-                    }
-                }
-                
-                if (value === 'C') {
-                    currentInput = '0';
-                    currentOperation = '';
-                    previousInput = '';
-                    operationDisplay.textContent = '';
-                } else if (value === 'DEL') {
-                    if (currentInput.length > 1) {
-                        currentInput = currentInput.slice(0, -1);
-                    } else {
-                        currentInput = '0';
-                    }
-                } else if (value === '+/-') {
-                    currentInput = (parseFloat(currentInput) * -1).toString();
-                } else if (value === '%') {
-                    currentInput = (parseFloat(currentInput) / 100).toString();
-                } else if (['+', '-', '*', '/'].includes(value)) {
-                    if (currentOperation !== '') {
-                        calculate();
-                    }
-                    previousInput = currentInput;
-                    currentOperation = value;
-                    operationDisplay.textContent = `${previousInput} ${getOperatorSymbol(currentOperation)}`;
-                    currentInput = '0';
-                } else if (value === '=') {
-                    if (currentOperation !== '') {
-                        operationDisplay.textContent += ` ${currentInput} =`;
-                        calculate();
-                        currentOperation = '';
-                    }
-                } else if (value === '.') {
-                    if (!currentInput.includes('.')) {
-                        currentInput += '.';
-                    }
-                } else {
-                    if (currentInput === '0') {
-                        currentInput = value;
-                    } else {
-                        currentInput += value;
-                    }
-                }
-                
-                resultDisplay.textContent = currentInput;
+
+                document.getElementById('closeApps').addEventListener('click', () => {
+                    elements.hiddenApps.classList.remove('visible');
+                    elements.calculator.classList.remove('hidden');
+                });
+
+                document.getElementById('addAppBtn').addEventListener('click', openAddForm);
+
+                document.getElementById('closeForm').addEventListener('click', () => {
+                    elements.appForm.classList.remove('visible');
+                });
+
+                document.getElementById('saveApp').addEventListener('click', saveApp);
+
+                document.getElementById('submitPassword').addEventListener('click', checkPassword);
+                elements.passwordInput.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') checkPassword();
+                });
             }
-            
+
+            function handleInput(value) {
+                if (state.currentInput.length >= MAX_INPUT_LENGTH && !['C', 'DEL', '=', '+', '-', '*', '/'].includes(value)) {
+                    return;
+                }
+
+                state.calculationSequence += value;
+                if (state.calculationSequence.includes(SECRET_CALCULATION)) {
+                    showPasswordScreen();
+                    state.calculationSequence = '';
+                    return;
+                }
+                state.calculationSequence = state.calculationSequence.slice(-10);
+
+                switch (value) {
+                    case 'C':
+                        resetCalculator();
+                        break;
+                    case 'DEL':
+                        state.currentInput = state.currentInput.length > 1 ? state.currentInput.slice(0, -1) : '0';
+                        break;
+                    case '+/-':
+                        state.currentInput = (parseFloat(state.currentInput) * -1).toString();
+                        break;
+                    case '%':
+                        state.currentInput = (parseFloat(state.currentInput) / 100).toString();
+                        break;
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '/':
+                        handleOperator(value);
+                        break;
+                    case '=':
+                        if (state.currentOperation) {
+                            elements.operation.textContent += ` ${state.currentInput} =`;
+                            calculate();
+                            state.currentOperation = '';
+                        }
+                        break;
+                    case '.':
+                        if (!state.currentInput.includes('.')) state.currentInput += '.';
+                        break;
+                    default:
+                        state.currentInput = state.currentInput === '0' ? value : state.currentInput + value;
+                }
+
+                updateDisplay();
+            }
+
+            function handleOperator(operator) {
+                if (state.currentOperation) calculate();
+                state.previousInput = state.currentInput;
+                state.currentOperation = operator;
+                elements.operation.textContent = `${state.previousInput} ${getOperatorSymbol(operator)}`;
+                state.currentInput = '0';
+            }
+
             function calculate() {
-                const prev = parseFloat(previousInput);
-                const current = parseFloat(currentInput);
-                let result = 0;
-                
-                switch (currentOperation) {
+                const prev = parseFloat(state.previousInput);
+                const current = parseFloat(state.currentInput);
+                let result;
+
+                switch (state.currentOperation) {
                     case '+': result = prev + current; break;
                     case '-': result = prev - current; break;
                     case '*': result = prev * current; break;
                     case '/':
-                        if (current !== 0) {
-                            result = prev / current;
-                        } else {
-                            alert("Erreur: Division par zéro");
-                            result = 0;
-                        }
+                        result = current !== 0 ? prev / current : 'Erreur';
                         break;
                 }
-                
-                currentInput = result.toString();
+
+                state.currentInput = Number.isFinite(result) ? result.toFixed(2).replace(/\.?0+$/, '') : result;
             }
-            
+
+            function resetCalculator() {
+                state.currentInput = '0';
+                state.currentOperation = '';
+                state.previousInput = '';
+                elements.operation.textContent = '';
+            }
+
+            function updateDisplay() {
+                elements.result.textContent = state.currentInput;
+            }
+
             function getOperatorSymbol(operator) {
-                switch (operator) {
-                    case '+': return '+';
-                    case '-': return '−';
-                    case '*': return '×';
-                    case '/': return '÷';
-                    default: return operator;
-                }
+                const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+                return symbols[operator] || operator;
             }
-            
+
+            function showPasswordScreen() {
+                elements.passwordScreen.classList.add('visible');
+                elements.passwordInput.focus();
+            }
+
             function loadApps() {
-                const childrenToRemove = Array.from(appList.children).filter(child => child !== document.getElementById('addAppBtn'));
-                childrenToRemove.forEach(child => appList.removeChild(child));
-                
-                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
+                const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                const fragment = document.createDocumentFragment();
                 
                 apps.forEach((app, index) => {
                     const appItem = document.createElement('div');
@@ -636,86 +654,105 @@
                     appItem.innerHTML = `
                         <div class="app-icon">${app.icon}</div>
                         <div class="app-info">
-                            <div class="app-title">${app.title}</div>
-                            <div class="app-desc">${app.link}</div>
+                            <div class="app-title">${sanitize(app.title)}</div>
+                            <div class="app-desc">${sanitize(app.link)}</div>
                         </div>
                         <div class="app-actions">
                             <button class="action-btn edit" data-index="${index}">✏️</button>
                             <button class="action-btn delete" data-index="${index}">🗑️</button>
                         </div>
                     `;
-                    
-                    appItem.querySelector('.app-info').addEventListener('click', function() {
-                        if (app.link.startsWith('http')) {
-                            window.open(app.link, '_blank');
-                        } else {
-                            alert(`Ouvrir l'accès : ${app.title}\nDétails : ${app.link}`);
-                        }
-                    });
-                    
-                    appItem.querySelector('.edit').addEventListener('click', function() {
-                        editApp(index);
-                    });
-                    
-                    appItem.querySelector('.delete').addEventListener('click', function() {
-                        deleteApp(index);
-                    });
-                    
-                    appList.appendChild(appItem);
+
+                    appItem.querySelector('.app-info').addEventListener('click', () => openLink(app.link, app.title));
+                    appItem.querySelector('.edit').addEventListener('click', () => editApp(index));
+                    appItem.querySelector('.delete').addEventListener('click', () => deleteApp(index));
+                    fragment.appendChild(appItem);
                 });
+
+                const addAppBtn = elements.appList.querySelector('#addAppBtn');
+                elements.appList.innerHTML = '';
+                elements.appList.appendChild(addAppBtn);
+                elements.appList.appendChild(fragment);
             }
-            
-            function saveApp(title, link, icon) {
-                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps.push({ title, link, icon });
-                localStorage.setItem('hiddenApps', JSON.stringify(apps));
-                loadApps();
+
+            function sanitize(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
             }
-            
-            function updateApp(index, title, link, icon) {
-                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                apps[index] = { title, link, icon };
-                localStorage.setItem('hiddenApps', JSON.stringify(apps));
-                loadApps();
-            }
-            
-            function editApp(index) {
-                const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                const app = apps[index];
-                editingIndex = index;
-                formTitle.textContent = "Modifier l'accès";
-                document.getElementById('appTitle').value = app.title;
-                document.getElementById('appLink').value = app.link;
-                document.getElementById('appIcon').value = app.icon;
-                appForm.classList.add('visible');
-            }
-            
-            function deleteApp(index) {
-                if (confirm("Voulez-vous vraiment supprimer cet accès ?")) {
-                    const apps = JSON.parse(localStorage.getItem('hiddenApps'));
-                    apps.splice(index, 1);
-                    localStorage.setItem('hiddenApps', JSON.stringify(apps));
-                    loadApps();
-                }
-            }
-            
-            function checkPassword() {
-                const enteredPassword = passwordInput.value;
-                
-                if (enteredPassword === SECRET_CODE) {
-                    passwordScreen.classList.remove('visible');
-                    calculator.classList.add('hidden');
-                    hiddenApps.classList.add('visible');
-                    passwordInput.value = '';
+
+            function openLink(link, title) {
+                if (/^https?:\/\//i.test(link)) {
+                    window.open(link, '_blank', 'noopener,noreferrer');
                 } else {
-                    passwordInput.value = '';
-                    passwordInput.classList.add('error');
-                    setTimeout(() => {
-                        passwordInput.classList.remove('error');
-                    }, 500);
+                    alert(`Ouvrir l'accès : ${title}\nDétails : ${link}`);
                 }
             }
-        });
+
+            function openAddForm() {
+                state.editingIndex = null;
+                elements.formTitle.textContent = "Ajouter un accès";
+                elements.appTitle.value = '';
+                elements.appLink.value = '';
+                elements.appIcon.value = '💰';
+                elements.appForm.classList.add('visible');
+            }
+
+            function saveApp() {
+                const title = elements.appTitle.value.trim();
+                const link = elements.appLink.value.trim();
+                const icon = elements.appIcon.value;
+
+                if (!title || !link) {
+                    alert("Veuillez remplir tous les champs obligatoires.");
+                    return;
+                }
+
+                const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                if (state.editingIndex === null) {
+                    apps.push({ title, link, icon });
+                } else {
+                    apps[state.editingIndex] = { title, link, icon };
+                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+                elements.appForm.classList.remove('visible');
+                loadApps();
+            }
+
+            function editApp(index) {
+                const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                const app = apps[index];
+                state.editingIndex = index;
+                elements.formTitle.textContent = "Modifier l'accès";
+                elements.appTitle.value = app.title;
+                elements.appLink.value = app.link;
+                elements.appIcon.value = app.icon;
+                elements.appForm.classList.add('visible');
+            }
+
+            function deleteApp(index) {
+                if (!confirm("Voulez-vous vraiment supprimer cet accès ?")) return;
+                const apps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                apps.splice(index, 1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+                loadApps();
+            }
+
+            function checkPassword() {
+                if (elements.passwordInput.value === SECRET_CODE) {
+                    elements.passwordScreen.classList.remove('visible');
+                    elements.calculator.classList.add('hidden');
+                    elements.hiddenApps.classList.add('visible');
+                    elements.passwordInput.value = '';
+                } else {
+                    elements.passwordInput.classList.add('error');
+                    elements.passwordInput.value = '';
+                    setTimeout(() => elements.passwordInput.classList.remove('error'), 500);
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', initialize);
+        })();
     </script>
 </body>
 </html>
